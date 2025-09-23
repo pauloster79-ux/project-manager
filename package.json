@@ -4,7 +4,7 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "build": "echo build",
-    "dev:web": "echo run web later",
+    "dev:web": "npm -w apps/web run dev",
     "prisma:generate": "npm -w packages/db run prisma:generate",
     "prisma:migrate": "npm -w packages/db run prisma:migrate",
     "db:seed": "npm -w packages/db run seed",
