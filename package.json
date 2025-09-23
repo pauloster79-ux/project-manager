@@ -1,0 +1,14 @@
+{
+  "name": "ai-project-hub",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "build": "echo build",
+    "dev:web": "echo run web later",
+    "prisma:generate": "npm -w packages/db run prisma:generate",
+    "prisma:migrate": "npm -w packages/db run prisma:migrate",
+    "db:seed": "npm -w packages/db run seed",
+    "slack:test": "npm -w packages/integrations-slack run test:send"
+  },
+  "devDependencies": { "typescript": "^5.6.3" }
+}

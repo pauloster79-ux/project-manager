@@ -1,0 +1,240 @@
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+generator client { provider = "prisma-client-js" }
+
+enum SignalType { EMAIL SLACK_MESSAGE MEETING_NOTE STATUS_UPDATE FILE WEBHOOK OTHER }
+enum ProposalStatus { PROPOSED APPLIED DISMISSED }
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  slackUserId String?  @unique
+  tasks       Task[]   @relation("TaskOwner")
+  risks       Risk[]   @relation("RiskOwner")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Project {
+  id            String              @id @default(cuid())
+  name          String
+  description   String?
+  status        String?
+  tasks         Task[]
+  risks         Risk[]
+  updates       StatusUpdate[]
+  connections   ProjectConnection[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model Task {
+  id               String          @id @default(cuid())
+  project          Project         @relation(fields: [projectId], references: [id])
+  projectId        String
+  title            String
+  description      String?
+  status           String
+  priority         String
+  owner            User?           @relation("TaskOwner", fields: [ownerId], references: [id])
+  ownerId          String?
+  dueDate          DateTime?
+  version          Int             @default(1)
+  currentVersionId String?
+  currentVersion   TaskVersion?    @relation("TaskCurrentVersion", fields: [currentVersionId], references: [id])
+  versions         TaskVersion[]   @relation("TaskVersions")
+  progressUpdates  TaskProgressUpdate[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  @@index([projectId])
+}
+
+model TaskVersion {
+  id                     String   @id @default(cuid())
+  task                   Task     @relation("TaskVersions", fields: [taskId], references: [id])
+  taskId                 String
+  version                Int
+  title                  String
+  description            String?
+  status                 String
+  priority               String
+  ownerId                String?
+  dueDate                DateTime?
+  actorId                String?
+  sourceProposedChangeId String?
+  createdAt              DateTime @default(now())
+  @@unique([taskId, version])
+  @@index([taskId])
+}
+
+model Risk {
+  id               String        @id @default(cuid())
+  project          Project       @relation(fields: [projectId], references: [id])
+  projectId        String
+  title            String
+  description      String
+  likelihood       String
+  impact           String
+  mitigationPlan   String?
+  status           String
+  owner            User?         @relation("RiskOwner", fields: [ownerId], references: [id])
+  ownerId          String?
+  version          Int           @default(1)
+  currentVersionId String?
+  currentVersion   RiskVersion?  @relation("RiskCurrentVersion", fields: [currentVersionId], references: [id])
+  versions         RiskVersion[] @relation("RiskVersions")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  @@index([projectId])
+}
+
+model RiskVersion {
+  id                     String   @id @default(cuid())
+  risk                   Risk     @relation("RiskVersions", fields: [riskId], references: [id])
+  riskId                 String
+  version                Int
+  title                  String
+  description            String
+  likelihood             String
+  impact                 String
+  mitigationPlan         String?
+  status                 String
+  ownerId                String?
+  actorId                String?
+  sourceProposedChangeId String?
+  createdAt              DateTime @default(now())
+  @@unique([riskId, version])
+  @@index([riskId])
+}
+
+model Resource {
+  id               String   @id @default(cuid())
+  name             String
+  type             String
+  tags             String[] @db.Text
+  ownerId          String?
+  externalIds      Json?
+  costRate         Decimal? @db.Decimal(10,2)
+  availabilityNote String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Connection {
+  id          String   @id @default(cuid())
+  provider    String
+  label       String
+  credentials Json
+  teamId      String?
+  teamName    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  links       ProjectConnection[]
+  targets     ChannelSubscription[]
+}
+
+model ProjectConnection {
+  id           String     @id @default(cuid())
+  project      Project    @relation(fields: [projectId], references: [id])
+  projectId    String
+  connection   Connection @relation(fields: [connectionId], references: [id])
+  connectionId String
+  config       Json?
+  createdAt    DateTime   @default(now())
+  @@index([projectId])
+  @@index([connectionId])
+}
+
+model ChannelSubscription {
+  id           String     @id @default(cuid())
+  connection   Connection @relation(fields: [connectionId], references: [id])
+  connectionId String
+  projectId    String?
+  userId       String?
+  targetType   String
+  targetRef    String
+  createdAt    DateTime   @default(now())
+}
+
+model StatusUpdate {
+  id         String   @id @default(cuid())
+  project    Project  @relation(fields: [projectId], references: [id])
+  projectId  String
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+  period     String
+  progressPct Int?
+  blockers   String?
+  notes      String?
+  createdAt  DateTime @default(now())
+}
+
+model TaskProgressUpdate {
+  id           String   @id @default(cuid())
+  task         Task     @relation(fields: [taskId], references: [id])
+  taskId       String
+  authorUserId String?
+  progressPct  Int?
+  blockers     String?
+  notes        String?
+  signalId     String?
+  createdAt    DateTime @default(now())
+  @@index([taskId])
+}
+
+model Signal {
+  id           String     @id @default(cuid())
+  type         SignalType
+  provider     String?
+  sourceId     String?
+  projectId    String?
+  authorUserId String?
+  title        String?
+  content      String?
+  metadata     Json?
+  createdAt    DateTime   @default(now())
+  links        SignalLink[]
+  evidences    ProposedChangeEvidence[]
+  @@index([projectId])
+  @@index([type, provider])
+}
+
+model SignalLink {
+  id         String   @id @default(cuid())
+  signal     Signal   @relation(fields: [signalId], references: [id])
+  signalId   String
+  targetType String
+  targetId   String
+  createdAt  DateTime @default(now())
+  @@index([signalId])
+  @@index([targetType, targetId])
+}
+
+model ProposedChange {
+  id          String         @id @default(cuid())
+  entityType  String
+  entityId    String
+  patch       Json
+  summary     String?
+  confidence  Float?
+  status      ProposalStatus @default(PROPOSED)
+  proposerId  String?
+  createdAt   DateTime       @default(now())
+  decidedById String?
+  decidedAt   DateTime?
+  reason      String?
+  evidence    ProposedChangeEvidence[]
+  @@index([entityType, entityId])
+  @@index([status])
+}
+
+model ProposedChangeEvidence {
+  id                String         @id @default(cuid())
+  proposedChange    ProposedChange @relation(fields: [proposedChangeId], references: [id])
+  proposedChangeId  String
+  signal            Signal         @relation(fields: [signalId], references: [id])
+  signalId          String
+  weight            Float?
+  @@index([proposedChangeId])
+  @@index([signalId])
+}

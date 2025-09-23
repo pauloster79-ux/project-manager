@@ -1,0 +1,9 @@
+{
+  "name": "@pm/integrations-slack",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/transport.ts",
+  "scripts": { "test:send": "tsx src/test-send.ts" },
+  "dependencies": { "@pm/core": "workspace:*", "@slack/web-api": "^7.0.0" },
+  "devDependencies": { "tsx": "^4.19.1", "typescript": "^5.6.3" }
+}
