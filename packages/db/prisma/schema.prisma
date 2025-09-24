@@ -86,6 +86,8 @@ model Task {
 
   title       String
   description String?
+  status      String
+  priority    String
 
   // current version & history
   currentVersionId String?       @unique
@@ -129,7 +131,10 @@ model Risk {
   owner   User?   @relation("RiskOwner", fields: [ownerId], references: [id])
 
   title       String
-  description String?
+  description String
+  likelihood  String
+  impact      String
+  status      String
 
   currentVersionId String?       @unique
   currentVersion   RiskVersion?  @relation("RiskCurrentVersion", fields: [currentVersionId], references: [id])
