@@ -206,6 +206,9 @@ model ProposedChange {
   entityType String
   entityId   String
 
+  // NEW: summary used by the UI
+  summary String?
+
   status     ProposalStatus @default(PROPOSED)
   confidence Float?
   rationale  String?
