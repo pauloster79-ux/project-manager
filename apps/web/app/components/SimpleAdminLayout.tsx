@@ -26,7 +26,7 @@ export default function SimpleAdminLayout({ children }: SimpleAdminLayoutProps) 
       <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
         <div className="p-6">
           <h1 className="text-xl font-bold text-gray-900">Project Manager</h1>
-          <p className="text-sm text-gray-500">AI-powered platform</p>
+          <p className="text-sm text-gray-500">AI-powered platform v2</p>
         </div>
         
         <nav className="mt-8">
