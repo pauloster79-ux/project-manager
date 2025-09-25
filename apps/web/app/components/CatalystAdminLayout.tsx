@@ -89,7 +89,11 @@ const navigation = [
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ]
 
-export default function CatalystAdminLayout({ children }) {
+interface CatalystAdminLayoutProps {
+  children: React.ReactNode
+}
+
+export default function CatalystAdminLayout({ children }: CatalystAdminLayoutProps) {
   const pathname = usePathname()
 
   const sidebar = (
