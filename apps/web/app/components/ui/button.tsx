@@ -158,7 +158,15 @@ const styles = {
   },
 }
 
-export const Button = forwardRef(function Button({ color, outline, plain, className, children, ...props }, ref) {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  color?: keyof typeof styles.colors
+  outline?: boolean
+  plain?: boolean
+  href?: string
+  children: React.ReactNode
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({ color, outline, plain, className, children, ...props }, ref) {
   let classes = clsx(
     className,
     styles.base,
@@ -179,7 +187,7 @@ export const Button = forwardRef(function Button({ color, outline, plain, classN
 /**
  * Expand the hit area to at least 44×44px on touch devices
  */
-export function TouchTarget({ children }) {
+export function TouchTarget({ children }: { children: React.ReactNode }) {
   return (
     <>
       <span
