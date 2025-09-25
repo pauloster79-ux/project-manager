@@ -20,7 +20,13 @@ function CloseMenuIcon() {
   )
 }
 
-function MobileSidebar({ open, close, children }) {
+interface MobileSidebarProps {
+  open: boolean
+  close: () => void
+  children: React.ReactNode
+}
+
+function MobileSidebar({ open, close, children }: MobileSidebarProps) {
   return (
     <Headless.Dialog open={open} onClose={close} className="lg:hidden">
       <Headless.DialogBackdrop
@@ -44,7 +50,13 @@ function MobileSidebar({ open, close, children }) {
   )
 }
 
-export function SidebarLayout({ navbar, sidebar, children }) {
+interface SidebarLayoutProps {
+  navbar: React.ReactNode
+  sidebar: React.ReactNode
+  children: React.ReactNode
+}
+
+export function SidebarLayout({ navbar, sidebar, children }: SidebarLayoutProps) {
   let [showSidebar, setShowSidebar] = useState(false)
 
   return (

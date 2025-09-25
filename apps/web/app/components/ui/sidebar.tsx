@@ -7,11 +7,54 @@ import React, { forwardRef, useId } from 'react'
 import { TouchTarget } from './button'
 import { Link } from './link'
 
-export function Sidebar({ className, ...props }) {
+interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
+  className?: string
+}
+
+interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+}
+
+interface SidebarBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+}
+
+interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+}
+
+interface SidebarSectionProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+}
+
+interface SidebarDividerProps extends React.HTMLAttributes<HTMLHRElement> {
+  className?: string
+}
+
+interface SidebarSpacerProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+}
+
+interface SidebarHeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  className?: string
+}
+
+interface SidebarItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  current?: boolean
+  className?: string
+  children?: React.ReactNode
+  href?: string
+}
+
+interface SidebarLabelProps extends React.HTMLAttributes<HTMLSpanElement> {
+  className?: string
+}
+
+export function Sidebar({ className, ...props }: SidebarProps) {
   return <nav {...props} className={clsx(className, 'flex h-full min-h-0 flex-col')} />
 }
 
-export function SidebarHeader({ className, ...props }) {
+export function SidebarHeader({ className, ...props }: SidebarHeaderProps) {
   return (
     <div
       {...props}
@@ -23,7 +66,7 @@ export function SidebarHeader({ className, ...props }) {
   )
 }
 
-export function SidebarBody({ className, ...props }) {
+export function SidebarBody({ className, ...props }: SidebarBodyProps) {
   return (
     <div
       {...props}
@@ -35,7 +78,7 @@ export function SidebarBody({ className, ...props }) {
   )
 }
 
-export function SidebarFooter({ className, ...props }) {
+export function SidebarFooter({ className, ...props }: SidebarFooterProps) {
   return (
     <div
       {...props}
@@ -47,7 +90,7 @@ export function SidebarFooter({ className, ...props }) {
   )
 }
 
-export function SidebarSection({ className, ...props }) {
+export function SidebarSection({ className, ...props }: SidebarSectionProps) {
   let id = useId()
 
   return (
@@ -57,21 +100,21 @@ export function SidebarSection({ className, ...props }) {
   )
 }
 
-export function SidebarDivider({ className, ...props }) {
+export function SidebarDivider({ className, ...props }: SidebarDividerProps) {
   return <hr {...props} className={clsx(className, 'my-4 border-t border-zinc-950/5 lg:-mx-4 dark:border-white/5')} />
 }
 
-export function SidebarSpacer({ className, ...props }) {
+export function SidebarSpacer({ className, ...props }: SidebarSpacerProps) {
   return <div aria-hidden="true" {...props} className={clsx(className, 'mt-8 flex-1')} />
 }
 
-export function SidebarHeading({ className, ...props }) {
+export function SidebarHeading({ className, ...props }: SidebarHeadingProps) {
   return (
     <h3 {...props} className={clsx(className, 'mb-1 px-2 text-xs/6 font-medium text-zinc-500 dark:text-zinc-400')} />
   )
 }
 
-export const SidebarItem = forwardRef(function SidebarItem(
+export const SidebarItem = forwardRef<HTMLButtonElement, SidebarItemProps>(function SidebarItem(
   { current, className, children, ...props },
   ref
 ) {
@@ -111,7 +154,7 @@ export const SidebarItem = forwardRef(function SidebarItem(
           {...props}
           className={classes}
           data-current={current ? 'true' : undefined}
-          ref={ref}
+          ref={ref as any}
         >
           <TouchTarget>{children}</TouchTarget>
         </Headless.CloseButton>
@@ -129,6 +172,6 @@ export const SidebarItem = forwardRef(function SidebarItem(
   )
 })
 
-export function SidebarLabel({ className, ...props }) {
+export function SidebarLabel({ className, ...props }: SidebarLabelProps) {
   return <span {...props} className={clsx(className, 'truncate')} />
 }

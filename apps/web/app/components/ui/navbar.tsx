@@ -2,7 +2,11 @@ import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
 import React, { forwardRef } from 'react'
 
-export const NavbarItem = forwardRef(function NavbarItem({ className, ...props }, ref) {
+interface NavbarItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string
+}
+
+export const NavbarItem = forwardRef<HTMLButtonElement, NavbarItemProps>(function NavbarItem({ className, ...props }, ref) {
   return (
     <Headless.Button
       ref={ref}
