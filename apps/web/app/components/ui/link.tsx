@@ -2,7 +2,12 @@ import clsx from 'clsx'
 import NextLink from 'next/link'
 import { forwardRef } from 'react'
 
-export const Link = forwardRef(function Link({ href, ...props }, ref) {
+interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  href: string
+  children?: React.ReactNode
+}
+
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link({ href, ...props }, ref) {
   return (
     <NextLink
       ref={ref}

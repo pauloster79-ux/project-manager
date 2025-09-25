@@ -158,7 +158,7 @@ const styles = {
   },
 }
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'href'> {
   color?: keyof typeof styles.colors
   outline?: boolean
   plain?: boolean
@@ -174,7 +174,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   )
 
   return typeof props.href === 'string' ? (
-    <Link {...props} className={classes} ref={ref}>
+    <Link href={props.href} className={classes} ref={ref as any}>
       <TouchTarget>{children}</TouchTarget>
     </Link>
   ) : (
