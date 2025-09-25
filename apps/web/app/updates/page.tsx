@@ -1,8 +1,8 @@
-import AdminLayout from '../components/AdminLayout'
+import CatalystAdminLayout from '../components/CatalystAdminLayout'
 
 export default function Updates() {
   return (
-    <AdminLayout>
+    <CatalystAdminLayout>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <div>

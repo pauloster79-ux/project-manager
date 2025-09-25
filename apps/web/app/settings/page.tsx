@@ -1,8 +1,8 @@
-import AdminLayout from '../components/AdminLayout'
+import CatalystAdminLayout from '../components/CatalystAdminLayout'
 
 export default function Settings() {
   return (
-    <AdminLayout>
+    <CatalystAdminLayout>
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
