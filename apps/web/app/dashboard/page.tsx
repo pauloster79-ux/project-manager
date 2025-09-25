@@ -1,8 +1,8 @@
-import CatalystAdminLayout from '../components/CatalystAdminLayout'
+import SimpleAdminLayout from '../components/SimpleAdminLayout'
 
 export default function Dashboard() {
   return (
-    <CatalystAdminLayout>
+    <SimpleAdminLayout>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>

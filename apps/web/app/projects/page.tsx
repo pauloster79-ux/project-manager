@@ -1,8 +1,8 @@
-import CatalystAdminLayout from '../components/CatalystAdminLayout'
+import SimpleAdminLayout from '../components/SimpleAdminLayout'
 
 export default function Projects() {
   return (
-    <CatalystAdminLayout>
+    <SimpleAdminLayout>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <div>
