@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/catalyst/select-advanced";
+import { Select, SelectTrigger, SelectItem, SelectValue } from "@/components/catalyst/select-advanced";
 
 type Project = { id: string; name: string };
 
@@ -30,11 +30,9 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
       <SelectTrigger className="w-full">
         <SelectValue placeholder={loading ? "Loading…" : "Select project"} />
       </SelectTrigger>
-      <SelectContent>
-        {projects.map((p) => (
-          <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-        ))}
-      </SelectContent>
+      {projects.map((p) => (
+        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+      ))}
     </Select>
   );
 }
