@@ -1,7 +1,6 @@
 'use client'
 
-import * as Headless from '@headlessui/react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavbarItem } from './navbar'
 
 function OpenMenuIcon() {
@@ -21,26 +20,40 @@ function CloseMenuIcon() {
 }
 
 function MobileSidebar({ open, close, children }: React.PropsWithChildren<{ open: boolean; close: () => void }>) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [open])
+
+  if (!open) return null
+
   return (
-    <Headless.Dialog open={open} onClose={close} className="lg:hidden">
-      <Headless.DialogBackdrop
-        transition
-        className="fixed inset-0 bg-black/30 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+    <div className="lg:hidden fixed inset-0 z-50">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/30 transition-opacity"
+        onClick={close}
       />
-      <Headless.DialogPanel
-        transition
-        className="fixed inset-y-0 w-full max-w-80 p-2 transition duration-300 ease-in-out data-closed:-translate-x-full"
-      >
+      
+      {/* Sidebar Panel */}
+      <div className="fixed inset-y-0 w-full max-w-80 p-2 transition-transform">
         <div className="flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10">
           <div className="-mb-3 px-4 pt-3">
-            <Headless.CloseButton as={NavbarItem} aria-label="Close navigation">
+            <NavbarItem onClick={close} aria-label="Close navigation">
               <CloseMenuIcon />
-            </Headless.CloseButton>
+            </NavbarItem>
           </div>
           {children}
         </div>
-      </Headless.DialogPanel>
-    </Headless.Dialog>
+      </div>
+    </div>
   )
 }
 
