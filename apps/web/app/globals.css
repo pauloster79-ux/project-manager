@@ -24,26 +24,6 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
-    
-    /* Catalyst CSS Variables */
-    --spacing: 1rem;
-    --radius-lg: 0.75rem;
-    --color-zinc-950: 9 9 11;
-    --color-zinc-900: 24 24 27;
-    --color-zinc-800: 39 39 42;
-    --color-zinc-700: 63 63 70;
-    --color-zinc-600: 82 82 91;
-    --color-zinc-500: 113 113 122;
-    --color-zinc-400: 161 161 170;
-    --color-zinc-300: 212 212 216;
-    --color-zinc-200: 228 228 231;
-    --color-zinc-100: 244 244 245;
-    --color-white: 255 255 255;
-    --color-black: 0 0 0;
-    --color-blue-500: 59 130 246;
-    --color-blue-600: 37 99 235;
-    --color-red-500: 239 68 68;
-    --color-red-600: 220 38 38;
   }
 
   .dark {
@@ -66,24 +46,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    
-    /* Catalyst Dark Mode Color Variables */
-    --color-zinc-950: 9 9 11;
-    --color-zinc-900: 24 24 27;
-    --color-zinc-800: 39 39 42;
-    --color-zinc-700: 63 63 70;
-    --color-zinc-600: 82 82 91;
-    --color-zinc-500: 113 113 122;
-    --color-zinc-400: 161 161 170;
-    --color-zinc-300: 212 212 216;
-    --color-zinc-200: 228 228 231;
-    --color-zinc-100: 244 244 245;
-    --color-white: 255 255 255;
-    --color-black: 0 0 0;
-    --color-blue-500: 59 130 246;
-    --color-blue-600: 37 99 235;
-    --color-red-500: 239 68 68;
-    --color-red-600: 220 38 38;
   }
 }
 
