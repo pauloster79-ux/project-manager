@@ -17,12 +17,18 @@ export function AppSidebar({ projectId }: { projectId: string }) {
 
   return (
     <div className="flex h-full w-72 flex-col gap-4">
-      <Link href={`/projects/${projectId}`} className="text-xl font-semibold">
-        AI PM Hub
-      </Link>
+      <div className="flex items-center gap-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
+          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm8 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <Link href={`/projects/${projectId}`} className="text-xl font-semibold">
+          AI PM Hub
+        </Link>
+      </div>
 
       <div>
-        <div className="mb-2 text-xs text-muted-foreground">Project</div>
         <ProjectSelector currentProjectId={projectId} />
       </div>
 
