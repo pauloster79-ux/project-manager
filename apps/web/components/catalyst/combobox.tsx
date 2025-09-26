@@ -1,8 +1,7 @@
 'use client'
 
-import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 export function Combobox<T>({
   options,
@@ -14,6 +13,8 @@ export function Combobox<T>({
   autoFocus,
   'aria-label': ariaLabel,
   children,
+  value,
+  onChange,
   ...props
 }: {
   options: T[]
@@ -24,8 +25,15 @@ export function Combobox<T>({
   autoFocus?: boolean
   'aria-label'?: string
   children: (value: NonNullable<T>) => React.ReactElement
-} & Omit<Headless.ComboboxProps<T, false>, 'as' | 'multiple' | 'children'> & { anchor?: 'top' | 'bottom' }) {
+  value?: T | null
+  onChange?: (value: T | null) => void
+  anchor?: 'top' | 'bottom'
+}) {
   const [query, setQuery] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   const filteredOptions =
     query === ''
@@ -34,8 +42,59 @@ export function Combobox<T>({
           filter ? filter(option, query) : displayValue(option)?.toLowerCase().includes(query.toLowerCase())
         )
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter') {
+        setIsOpen(true)
+        setSelectedIndex(0)
+        e.preventDefault()
+      }
+      return
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        setSelectedIndex((prev) => (prev + 1) % filteredOptions.length)
+        e.preventDefault()
+        break
+      case 'ArrowUp':
+        setSelectedIndex((prev) => (prev - 1 + filteredOptions.length) % filteredOptions.length)
+        e.preventDefault()
+        break
+      case 'Enter':
+        if (selectedIndex >= 0 && selectedIndex < filteredOptions.length) {
+          onChange?.(filteredOptions[selectedIndex])
+          setIsOpen(false)
+          setQuery('')
+        }
+        e.preventDefault()
+        break
+      case 'Escape':
+        setIsOpen(false)
+        setSelectedIndex(-1)
+        e.preventDefault()
+        break
+    }
+  }
+
+  const handleOptionClick = (option: T) => {
+    onChange?.(option)
+    setIsOpen(false)
+    setQuery('')
+    inputRef.current?.focus()
+  }
+
+  useEffect(() => {
+    if (isOpen && listRef.current) {
+      const selectedElement = listRef.current.children[selectedIndex] as HTMLElement
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest' })
+      }
+    }
+  }, [selectedIndex, isOpen])
+
   return (
-    <Headless.Combobox {...props} multiple={false} virtual={{ options: filteredOptions }} onClose={() => setQuery('')}>
+    <div className="relative">
       <span
         data-slot="control"
         className={clsx([
@@ -54,12 +113,23 @@ export function Combobox<T>({
           'has-data-invalid:before:shadow-red-500/10',
         ])}
       >
-        <Headless.ComboboxInput
+        <input
+          ref={inputRef}
           autoFocus={autoFocus}
           data-slot="control"
           aria-label={ariaLabel}
-          displayValue={(option: T) => displayValue(option) ?? ''}
-          onChange={(event) => setQuery(event.target.value)}
+          value={query || displayValue(value) || ''}
+          onChange={(event) => {
+            setQuery(event.target.value)
+            setIsOpen(true)
+            setSelectedIndex(-1)
+          }}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsOpen(true)}
+          onBlur={() => {
+            // Delay closing to allow option clicks
+            setTimeout(() => setIsOpen(false), 150)
+          }}
           placeholder={placeholder}
           className={clsx([
             className,
@@ -83,7 +153,11 @@ export function Combobox<T>({
             'dark:scheme-dark',
           ])}
         />
-        <Headless.ComboboxButton className="group absolute inset-y-0 right-0 flex items-center px-2">
+        <button
+          type="button"
+          className="group absolute inset-y-0 right-0 flex items-center px-2"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           <svg
             className="size-5 stroke-zinc-500 group-data-disabled:stroke-zinc-600 group-data-hover:stroke-zinc-700 sm:size-4 dark:stroke-zinc-400 dark:group-data-hover:stroke-zinc-300 forced-colors:stroke-[CanvasText]"
             viewBox="0 0 16 16"
@@ -93,31 +167,63 @@ export function Combobox<T>({
             <path d="M5.75 10.75L8 13L10.25 10.75" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
             <path d="M10.25 5.25L8 3L5.75 5.25" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </Headless.ComboboxButton>
+        </button>
       </span>
-      <Headless.ComboboxOptions
-        transition
-        anchor={anchor}
-        className={clsx(
-          // Anchor positioning
-          '[--anchor-gap:--spacing(2)] [--anchor-padding:--spacing(4)] sm:data-[anchor~=start]:[--anchor-offset:-4px]',
-          // Base styles,
-          'isolate min-w-[calc(var(--input-width)+8px)] scroll-py-1 rounded-xl p-1 select-none empty:invisible',
-          // Invisible border that is only visible in `forced-colors` mode for accessibility purposes
-          'outline outline-transparent focus:outline-hidden',
-          // Handle scrolling when menu won't fit in viewport
-          'overflow-y-scroll overscroll-contain',
-          // Popover background
-          'bg-white/75 backdrop-blur-xl dark:bg-zinc-800/75',
-          // Shadows
-          'shadow-lg ring-1 ring-zinc-950/10 dark:ring-white/10 dark:ring-inset',
-          // Transitions
-          'transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none'
-        )}
-      >
-        {({ option }) => children(option)}
-      </Headless.ComboboxOptions>
-    </Headless.Combobox>
+      
+      {isOpen && filteredOptions.length > 0 && (
+        <div
+          ref={listRef}
+          className={clsx(
+            // Anchor positioning
+            'absolute z-50 min-w-[calc(var(--input-width)+8px)] scroll-py-1 rounded-xl p-1 select-none',
+            // Base styles
+            'isolate overflow-y-scroll overscroll-contain',
+            // Popover background
+            'bg-white/75 backdrop-blur-xl dark:bg-zinc-800/75',
+            // Shadows
+            'shadow-lg ring-1 ring-zinc-950/10 dark:ring-white/10 dark:ring-inset',
+            // Transitions
+            'transition-opacity duration-100 ease-in',
+            // Position based on anchor
+            anchor === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
+            'left-0 right-0 max-h-60'
+          )}
+        >
+          {filteredOptions.map((option, index) => (
+            <div
+              key={index}
+              className={clsx(
+                // Basic layout
+                'group/option grid w-full cursor-default grid-cols-[1fr_--spacing(5)] items-baseline gap-x-2 rounded-lg py-2.5 pr-2 pl-3.5 sm:grid-cols-[1fr_--spacing(4)] sm:py-1.5 sm:pr-2 sm:pl-3',
+                // Typography
+                'text-base/6 text-zinc-950 sm:text-sm/6 dark:text-white forced-colors:text-[CanvasText]',
+                // Focus
+                'outline-hidden hover:bg-blue-500 hover:text-white',
+                // Forced colors mode
+                'forced-color-adjust-none forced-colors:hover:bg-[Highlight] forced-colors:hover:text-[HighlightText]',
+                // Selected state
+                index === selectedIndex ? 'bg-blue-500 text-white' : '',
+                // Disabled
+                'data-disabled:opacity-50'
+              )}
+              onClick={() => handleOptionClick(option)}
+            >
+              <span className="flex min-w-0 items-center">
+                {children(option)}
+              </span>
+              <svg
+                className="relative col-start-2 hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M4 8.5l3 3L12 4" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -125,10 +231,7 @@ export function ComboboxOption<T>({
   children,
   className,
   ...props
-}: { className?: string; children?: React.ReactNode } & Omit<
-  Headless.ComboboxOptionProps<'div', T>,
-  'as' | 'className'
->) {
+}: { className?: string; children?: React.ReactNode }) {
   let sharedClasses = clsx(
     // Base
     'flex min-w-0 items-center',
@@ -141,31 +244,9 @@ export function ComboboxOption<T>({
   )
 
   return (
-    <Headless.ComboboxOption
-      {...props}
-      className={clsx(
-        // Basic layout
-        'group/option grid w-full cursor-default grid-cols-[1fr_--spacing(5)] items-baseline gap-x-2 rounded-lg py-2.5 pr-2 pl-3.5 sm:grid-cols-[1fr_--spacing(4)] sm:py-1.5 sm:pr-2 sm:pl-3',
-        // Typography
-        'text-base/6 text-zinc-950 sm:text-sm/6 dark:text-white forced-colors:text-[CanvasText]',
-        // Focus
-        'outline-hidden data-focus:bg-blue-500 data-focus:text-white',
-        // Forced colors mode
-        'forced-color-adjust-none forced-colors:data-focus:bg-[Highlight] forced-colors:data-focus:text-[HighlightText]',
-        // Disabled
-        'data-disabled:opacity-50'
-      )}
-    >
-      <span className={clsx(className, sharedClasses)}>{children}</span>
-      <svg
-        className="relative col-start-2 hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4"
-        viewBox="0 0 16 16"
-        fill="none"
-        aria-hidden="true"
-      >
-        <path d="M4 8.5l3 3L12 4" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </Headless.ComboboxOption>
+    <span className={clsx(className, sharedClasses)} {...props}>
+      {children}
+    </span>
   )
 }
 
