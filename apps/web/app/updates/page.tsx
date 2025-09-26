@@ -1,100 +1,208 @@
-import BasicLayout from '../components/BasicLayout'
+'use client'
+
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export default function Updates() {
+  const pathname = usePathname()
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Projects', href: '/projects' },
+    { name: 'Tasks', href: '/tasks' },
+    { name: 'Risks', href: '/risks' },
+    { name: 'Updates', href: '/updates' },
+    { name: 'Users', href: '/users' },
+    { name: 'Settings', href: '/settings' },
+  ]
+
   return (
-    <BasicLayout>
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Updates</h1>
-            <p className="mt-2 text-gray-600">Project updates and announcements</p>
-          </div>
-          <button className="btn-primary">Create Update</button>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* Sidebar */}
+      <div style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        width: '256px', 
+        height: '100vh', 
+        backgroundColor: 'white', 
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' 
+      }}>
+        <div style={{ padding: '24px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+            Project Manager
+          </h1>
+          <p style={{ fontSize: '14px', color: '#6b7280', margin: '4px 0 0 0' }}>
+            AI-powered platform v4
+          </p>
         </div>
         
-        {/* Updates Feed */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">JD</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="text-sm font-medium text-gray-900">John Doe</h3>
-                    <span className="text-xs text-gray-500">•</span>
-                    <span className="text-xs text-gray-500">2 hours ago</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Project Alpha Milestone Completed</h4>
-                  <p className="text-gray-600 mb-4">
-                    We've successfully completed the user authentication module for Project Alpha. 
-                    The team has implemented secure login, registration, and password reset functionality. 
-                    Next up: Dashboard implementation.
-                  </p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>📁 Project Alpha</span>
-                    <span>👥 5 members</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <nav style={{ marginTop: '32px' }}>
+          <div style={{ padding: '0 16px' }}>
+            <h3 style={{ 
+              fontSize: '12px', 
+              fontWeight: '600', 
+              color: '#6b7280', 
+              textTransform: 'uppercase', 
+              letterSpacing: '0.05em',
+              margin: 0
+            }}>
+              Navigation
+            </h3>
           </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">JS</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="text-sm font-medium text-gray-900">Jane Smith</h3>
-                    <span className="text-xs text-gray-500">•</span>
-                    <span className="text-xs text-gray-500">1 day ago</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Project Beta Planning Update</h4>
-                  <p className="text-gray-600 mb-4">
-                    Completed the initial planning phase for Project Beta. We've finalized the technical 
-                    architecture and created detailed user stories. Development is scheduled to begin next week.
-                  </p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>📁 Project Beta</span>
-                    <span>👥 3 members</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div style={{ marginTop: '16px' }}>
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 16px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    borderRadius: '6px',
+                    margin: '4px 8px',
+                    textDecoration: 'none',
+                    backgroundColor: isActive ? '#dbeafe' : 'transparent',
+                    color: isActive ? '#1d4ed8' : '#4b5563',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                      e.currentTarget.style.color = '#111827'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                      e.currentTarget.style.color = '#4b5563'
+                    }
+                  }}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
           </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">MJ</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="text-sm font-medium text-gray-900">Mike Johnson</h3>
-                    <span className="text-xs text-gray-500">•</span>
-                    <span className="text-xs text-gray-500">3 days ago</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Risk Mitigation Plan</h4>
-                  <p className="text-gray-600 mb-4">
-                    Identified a potential risk with the third-party API integration. We've created a 
-                    backup plan and are exploring alternative solutions. Will provide more details in 
-                    the next team meeting.
-                  </p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>⚠️ Risk Management</span>
-                    <span>👥 All teams</span>
-                  </div>
-                </div>
-              </div>
+        </nav>
+        
+        <div style={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          left: 0, 
+          right: 0, 
+          padding: '16px', 
+          borderTop: '1px solid #e5e7eb' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ 
+              height: '32px', 
+              width: '32px', 
+              backgroundColor: '#2563eb', 
+              borderRadius: '50%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}>
+              <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>JD</span>
+            </div>
+            <div style={{ marginLeft: '12px' }}>
+              <p style={{ fontSize: '14px', fontWeight: '500', color: '#111827', margin: 0 }}>
+                John Doe
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Main content */}
+      <div style={{ marginLeft: '256px' }}>
+        {/* Top bar */}
+        <header style={{ 
+          backgroundColor: 'white', 
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+          borderBottom: '1px solid #e5e7eb' 
+        }}>
+          <div style={{ padding: '16px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <h1 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>
+                  Updates
+                </h1>
+                <select style={{
+                  backgroundColor: 'white',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  padding: '4px 12px',
+                  fontSize: '14px',
+                  outline: 'none'
+                }}>
+                  <option>Select Project</option>
+                  <option>Project Alpha</option>
+                  <option>Project Beta</option>
+                  <option>Project Gamma</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button style={{
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}>
+                  Post Update
+                </button>
+                <div style={{ 
+                  height: '32px', 
+                  width: '32px', 
+                  backgroundColor: '#2563eb', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>JD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main style={{ padding: '24px' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+              Project Updates
+            </h1>
+            <p style={{ marginTop: '8px', color: '#6b7280' }}>
+              Share progress and communicate with your team
+            </p>
+          </div>
+          
+          <div style={{ 
+            backgroundColor: 'white', 
+            padding: '24px', 
+            borderRadius: '8px', 
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+            border: '1px solid #e5e7eb' 
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '16px' }}>
+              Recent Updates
+            </h3>
+            <p style={{ color: '#6b7280' }}>
+              Project updates and communications will appear here.
+            </p>
+          </div>
+        </main>
+      </div>
+    </div>
   )
 }

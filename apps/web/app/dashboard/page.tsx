@@ -1,91 +1,244 @@
-import BasicLayout from '../components/BasicLayout'
+'use client'
+
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export default function Dashboard() {
+  const pathname = usePathname()
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Projects', href: '/projects' },
+    { name: 'Tasks', href: '/tasks' },
+    { name: 'Risks', href: '/risks' },
+    { name: 'Updates', href: '/updates' },
+    { name: 'Users', href: '/users' },
+    { name: 'Settings', href: '/settings' },
+  ]
+
   return (
-    <BasicLayout>
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="mt-2 text-gray-600">Overview of your projects and tasks</p>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* Sidebar */}
+      <div style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        width: '256px', 
+        height: '100vh', 
+        backgroundColor: 'white', 
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' 
+      }}>
+        <div style={{ padding: '24px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+            Project Manager
+          </h1>
+          <p style={{ fontSize: '14px', color: '#6b7280', margin: '4px 0 0 0' }}>
+            AI-powered platform v4
+          </p>
         </div>
         
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-primary-100 rounded-lg">
-                <span className="text-primary-600 text-xl">📁</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Projects</p>
-                <p className="text-2xl font-bold text-gray-900">12</p>
-              </div>
-            </div>
+        <nav style={{ marginTop: '32px' }}>
+          <div style={{ padding: '0 16px' }}>
+            <h3 style={{ 
+              fontSize: '12px', 
+              fontWeight: '600', 
+              color: '#6b7280', 
+              textTransform: 'uppercase', 
+              letterSpacing: '0.05em',
+              margin: 0
+            }}>
+              Navigation
+            </h3>
           </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <span className="text-green-600 text-xl">✅</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Completed Tasks</p>
-                <p className="text-2xl font-bold text-gray-900">48</p>
-              </div>
-            </div>
+          <div style={{ marginTop: '16px' }}>
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 16px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    borderRadius: '6px',
+                    margin: '4px 8px',
+                    textDecoration: 'none',
+                    backgroundColor: isActive ? '#dbeafe' : 'transparent',
+                    color: isActive ? '#1d4ed8' : '#4b5563',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                      e.currentTarget.style.color = '#111827'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                      e.currentTarget.style.color = '#4b5563'
+                    }
+                  }}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
           </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <span className="text-yellow-600 text-xl">⚠️</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Risks</p>
-                <p className="text-2xl font-bold text-gray-900">3</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <span className="text-blue-600 text-xl">👥</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Team Members</p>
-                <p className="text-2xl font-bold text-gray-900">24</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </nav>
         
-        {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                <p className="text-gray-600">Project Alpha milestone completed</p>
-                <span className="text-sm text-gray-400">2 hours ago</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <p className="text-gray-600">New task assigned to John Doe</p>
-                <span className="text-sm text-gray-400">4 hours ago</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <p className="text-gray-600">Risk identified in Project Beta</p>
-                <span className="text-sm text-gray-400">1 day ago</span>
-              </div>
+        <div style={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          left: 0, 
+          right: 0, 
+          padding: '16px', 
+          borderTop: '1px solid #e5e7eb' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ 
+              height: '32px', 
+              width: '32px', 
+              backgroundColor: '#2563eb', 
+              borderRadius: '50%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}>
+              <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>JD</span>
+            </div>
+            <div style={{ marginLeft: '12px' }}>
+              <p style={{ fontSize: '14px', fontWeight: '500', color: '#111827', margin: 0 }}>
+                John Doe
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Main content */}
+      <div style={{ marginLeft: '256px' }}>
+        {/* Top bar */}
+        <header style={{ 
+          backgroundColor: 'white', 
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+          borderBottom: '1px solid #e5e7eb' 
+        }}>
+          <div style={{ padding: '16px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <h1 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>
+                  Dashboard
+                </h1>
+                <select style={{
+                  backgroundColor: 'white',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  padding: '4px 12px',
+                  fontSize: '14px',
+                  outline: 'none'
+                }}>
+                  <option>Select Project</option>
+                  <option>Project Alpha</option>
+                  <option>Project Beta</option>
+                  <option>Project Gamma</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button style={{
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}>
+                  Create Project
+                </button>
+                <div style={{ 
+                  height: '32px', 
+                  width: '32px', 
+                  backgroundColor: '#2563eb', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>JD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main style={{ padding: '24px' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+              Dashboard
+            </h1>
+            <p style={{ marginTop: '8px', color: '#6b7280' }}>
+              Overview of your projects and tasks
+            </p>
+          </div>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: '24px' 
+          }}>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: '24px', 
+              borderRadius: '8px', 
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+              border: '1px solid #e5e7eb' 
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                Active Projects
+              </h3>
+              <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#2563eb', margin: 0 }}>
+                12
+              </p>
+            </div>
+            
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: '24px', 
+              borderRadius: '8px', 
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+              border: '1px solid #e5e7eb' 
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                Tasks Completed
+              </h3>
+              <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#059669', margin: 0 }}>
+                48
+              </p>
+            </div>
+            
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: '24px', 
+              borderRadius: '8px', 
+              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+              border: '1px solid #e5e7eb' 
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                Team Members
+              </h3>
+              <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#7c3aed', margin: 0 }}>
+                8
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
   )
 }

@@ -1,124 +1,208 @@
-import BasicLayout from '../components/BasicLayout'
+'use client'
+
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export default function Settings() {
+  const pathname = usePathname()
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Projects', href: '/projects' },
+    { name: 'Tasks', href: '/tasks' },
+    { name: 'Risks', href: '/risks' },
+    { name: 'Updates', href: '/updates' },
+    { name: 'Users', href: '/users' },
+    { name: 'Settings', href: '/settings' },
+  ]
+
   return (
-    <BasicLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="mt-2 text-gray-600">Manage your account and application preferences</p>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* Sidebar */}
+      <div style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        width: '256px', 
+        height: '100vh', 
+        backgroundColor: 'white', 
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' 
+      }}>
+        <div style={{ padding: '24px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+            Project Manager
+          </h1>
+          <p style={{ fontSize: '14px', color: '#6b7280', margin: '4px 0 0 0' }}>
+            AI-powered platform v4
+          </p>
         </div>
         
-        <div className="space-y-8">
-          {/* Profile Settings */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Profile</h2>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                  <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" defaultValue="John" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                  <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" defaultValue="Doe" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input type="email" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" defaultValue="john.doe@company.com" />
-                </div>
-              </div>
-              <div className="mt-6">
-                <button className="btn-primary">Save Changes</button>
-              </div>
-            </div>
+        <nav style={{ marginTop: '32px' }}>
+          <div style={{ padding: '0 16px' }}>
+            <h3 style={{ 
+              fontSize: '12px', 
+              fontWeight: '600', 
+              color: '#6b7280', 
+              textTransform: 'uppercase', 
+              letterSpacing: '0.05em',
+              margin: 0
+            }}>
+              Navigation
+            </h3>
           </div>
-          
-          {/* Notification Settings */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Email Notifications</h3>
-                    <p className="text-sm text-gray-500">Receive email updates about project activities</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="h-4 w-4 text-primary-600 rounded border-gray-300" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Task Assignments</h3>
-                    <p className="text-sm text-gray-500">Get notified when tasks are assigned to you</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="h-4 w-4 text-primary-600 rounded border-gray-300" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Project Updates</h3>
-                    <p className="text-sm text-gray-500">Receive updates about project milestones</p>
-                  </div>
-                  <input type="checkbox" className="h-4 w-4 text-primary-600 rounded border-gray-300" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Risk Alerts</h3>
-                    <p className="text-sm text-gray-500">Get notified about new risks and issues</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="h-4 w-4 text-primary-600 rounded border-gray-300" />
-                </div>
-              </div>
-              <div className="mt-6">
-                <button className="btn-primary">Save Preferences</button>
-              </div>
-            </div>
+          <div style={{ marginTop: '16px' }}>
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 16px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    borderRadius: '6px',
+                    margin: '4px 8px',
+                    textDecoration: 'none',
+                    backgroundColor: isActive ? '#dbeafe' : 'transparent',
+                    color: isActive ? '#1d4ed8' : '#4b5563',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                      e.currentTarget.style.color = '#111827'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                      e.currentTarget.style.color = '#4b5563'
+                    }
+                  }}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
           </div>
-          
-          {/* Security Settings */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Security</h2>
+        </nav>
+        
+        <div style={{ 
+          position: 'absolute', 
+          bottom: 0, 
+          left: 0, 
+          right: 0, 
+          padding: '16px', 
+          borderTop: '1px solid #e5e7eb' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ 
+              height: '32px', 
+              width: '32px', 
+              backgroundColor: '#2563eb', 
+              borderRadius: '50%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}>
+              <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>JD</span>
             </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900 mb-2">Change Password</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="password" placeholder="Current Password" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                    <input type="password" placeholder="New Password" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                  </div>
-                  <button className="btn-secondary mt-4">Update Password</button>
-                </div>
-                <div className="pt-4 border-t border-gray-200">
-                  <h3 className="text-sm font-medium text-gray-900 mb-2">Two-Factor Authentication</h3>
-                  <p className="text-sm text-gray-500 mb-4">Add an extra layer of security to your account</p>
-                  <button className="btn-primary">Enable 2FA</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Danger Zone */}
-          <div className="bg-white rounded-lg shadow-sm border border-red-200">
-            <div className="px-6 py-4 border-b border-red-200">
-              <h2 className="text-lg font-semibold text-red-900">Danger Zone</h2>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900">Delete Account</h3>
-                  <p className="text-sm text-gray-500 mb-4">Permanently delete your account and all associated data</p>
-                  <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">Delete Account</button>
-                </div>
-              </div>
+            <div style={{ marginLeft: '12px' }}>
+              <p style={{ fontSize: '14px', fontWeight: '500', color: '#111827', margin: 0 }}>
+                John Doe
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Main content */}
+      <div style={{ marginLeft: '256px' }}>
+        {/* Top bar */}
+        <header style={{ 
+          backgroundColor: 'white', 
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+          borderBottom: '1px solid #e5e7eb' 
+        }}>
+          <div style={{ padding: '16px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <h1 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: 0 }}>
+                  Settings
+                </h1>
+                <select style={{
+                  backgroundColor: 'white',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  padding: '4px 12px',
+                  fontSize: '14px',
+                  outline: 'none'
+                }}>
+                  <option>Select Project</option>
+                  <option>Project Alpha</option>
+                  <option>Project Beta</option>
+                  <option>Project Gamma</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button style={{
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}>
+                  Save Changes
+                </button>
+                <div style={{ 
+                  height: '32px', 
+                  width: '32px', 
+                  backgroundColor: '#2563eb', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <span style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>JD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main style={{ padding: '24px' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+              Settings
+            </h1>
+            <p style={{ marginTop: '8px', color: '#6b7280' }}>
+              Configure your project management preferences
+            </p>
+          </div>
+          
+          <div style={{ 
+            backgroundColor: 'white', 
+            padding: '24px', 
+            borderRadius: '8px', 
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+            border: '1px solid #e5e7eb' 
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '16px' }}>
+              General Settings
+            </h3>
+            <p style={{ color: '#6b7280' }}>
+              Configure your account and application settings here.
+            </p>
+          </div>
+        </main>
+      </div>
+    </div>
   )
 }
