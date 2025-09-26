@@ -118,7 +118,7 @@ export function Combobox<T>({
           autoFocus={autoFocus}
           data-slot="control"
           aria-label={ariaLabel}
-          value={query || displayValue(value) || ''}
+          value={query || displayValue(value ?? null) || ''}
           onChange={(event) => {
             setQuery(event.target.value)
             setIsOpen(true)
