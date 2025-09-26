@@ -11,7 +11,7 @@ export function Dropdown({ children, ...props }: { children: React.ReactNode }) 
 }
 
 export function DropdownButton<T extends React.ElementType = typeof Button>({
-  as: Component = Button,
+  as: Component = Button as any,
   ...props
 }: { className?: string } & Omit<React.ComponentPropsWithoutRef<T>, 'className'>) {
   return <Component {...props} />
