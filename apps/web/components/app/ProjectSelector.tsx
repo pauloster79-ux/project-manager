@@ -11,10 +11,13 @@ const STUB_PROJECTS = [
 
 export function ProjectSelector({ currentProjectId }: { currentProjectId: string }) {
   const router = useRouter();
+  
+  // If the current project ID doesn't match any stub projects, use the first one as default
+  const validProjectId = STUB_PROJECTS.find(p => p.id === currentProjectId)?.id || STUB_PROJECTS[0].id;
 
   return (
     <Listbox
-      value={currentProjectId}
+      value={validProjectId}
       onChange={(id) => router.push(`/projects/${id}/risks`)}
       placeholder="Select project"
     >
