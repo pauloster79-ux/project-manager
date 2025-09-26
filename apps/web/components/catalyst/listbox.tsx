@@ -33,8 +33,8 @@ export function Listbox<T>({
             'group relative block w-full',
             // Button specific styles
             'cursor-default py-2 pl-3 pr-10 text-left',
-            'border border-zinc-700 hover:border-zinc-600',
-            'bg-zinc-800',
+            'border border-zinc-300 hover:border-zinc-400',
+            'bg-white',
             'rounded-lg shadow-sm',
             // Hide default focus styles
             'focus:outline-hidden',
@@ -44,7 +44,7 @@ export function Listbox<T>({
             'disabled:opacity-50',
           ])}
         >
-          <span className="block truncate text-white">
+          <span className="block truncate text-zinc-900">
             {value ? (
               // Find the selected option and display its content
               (() => {
@@ -59,7 +59,7 @@ export function Listbox<T>({
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <svg
-              className="size-5 stroke-zinc-400 group-disabled:stroke-zinc-500 sm:size-4"
+              className="size-5 stroke-zinc-500 group-disabled:stroke-zinc-400 sm:size-4"
               viewBox="0 0 16 16"
               aria-hidden="true"
               fill="none"
@@ -77,9 +77,9 @@ export function Listbox<T>({
             // Handle scrolling when menu won't fit in viewport
             'overflow-y-auto max-h-60',
             // Popover background
-            'bg-zinc-800',
+            'bg-white',
             // Shadows
-            'shadow-lg border border-zinc-700',
+            'shadow-lg border border-zinc-200',
             // Transitions
             'transition-opacity duration-100 ease-in'
           )}
@@ -109,10 +109,10 @@ export function ListboxOption<T>({
           // Basic layout
           'group/option flex cursor-default items-center gap-2 rounded-lg py-2 px-3',
           // Typography
-          'text-sm text-white',
+          'text-sm text-zinc-900',
           // Focus and active states
           'outline-hidden',
-          active ? 'bg-blue-500 text-white' : 'hover:bg-zinc-700',
+          active ? 'bg-blue-500 text-white' : 'hover:bg-zinc-100',
           // Disabled
           'data-disabled:opacity-50',
           className
