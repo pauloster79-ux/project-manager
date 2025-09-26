@@ -1,8 +1,8 @@
-import SimpleAdminLayout from '../components/SimpleAdminLayout'
+import BasicLayout from '../components/BasicLayout'
 
 export default function Risks() {
   return (
-    <SimpleAdminLayout>
+    <BasicLayout>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <div>

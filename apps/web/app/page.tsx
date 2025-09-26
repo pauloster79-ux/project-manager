@@ -1,8 +1,8 @@
-import SimpleAdminLayout from './components/SimpleAdminLayout'
+import BasicLayout from './components/BasicLayout'
 
 export default function Home() {
   return (
-    <SimpleAdminLayout>
+    <BasicLayout>
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">Welcome to Project Manager</h1>
@@ -29,6 +29,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </SimpleAdminLayout>
+    </BasicLayout>
   )
 }
