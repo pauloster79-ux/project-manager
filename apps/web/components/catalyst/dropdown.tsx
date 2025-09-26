@@ -87,7 +87,7 @@ export function DropdownItem({
   )
 
   return href ? (
-    <Link href={href} className={classes} {...props}>
+    <Link href={href} className={classes} {...(props as any)}>
       {children}
     </Link>
   ) : (
