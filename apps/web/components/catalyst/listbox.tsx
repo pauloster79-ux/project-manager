@@ -1,6 +1,6 @@
 'use client'
 
-import * as Headless from '@headlessui/react'
+import { Listbox as HeadlessListbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react'
 import clsx from 'clsx'
 import { Fragment } from 'react'
 
@@ -17,10 +17,10 @@ export function Listbox<T>({
   autoFocus?: boolean
   'aria-label'?: string
   children?: React.ReactNode
-} & Omit<Headless.ListboxProps<typeof Fragment, T>, 'as' | 'multiple'>) {
+} & Omit<React.ComponentProps<typeof HeadlessListbox>, 'as' | 'multiple'>) {
   return (
-    <Headless.Listbox {...props} multiple={false}>
-      <Headless.ListboxButton
+    <HeadlessListbox {...props} multiple={false}>
+      <ListboxButton
         autoFocus={autoFocus}
         data-slot="control"
         aria-label={ariaLabel}
@@ -40,29 +40,9 @@ export function Listbox<T>({
           'data-disabled:opacity-50 data-disabled:before:bg-zinc-950/5 data-disabled:before:shadow-none',
         ])}
       >
-        <Headless.ListboxSelectedOption
-          as="span"
-          options={options}
-          placeholder={placeholder && <span className="block truncate text-zinc-500">{placeholder}</span>}
-          className={clsx([
-            // Basic layout
-            'relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
-            // Set minimum height for when no value is selected
-            'min-h-11 sm:min-h-9',
-            // Horizontal padding
-            'pr-[calc(--spacing(7)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pl-[calc(--spacing(3)-1px)]',
-            // Typography
-            'text-left text-base/6 text-zinc-950 placeholder:text-zinc-500 sm:text-sm/6 dark:text-white forced-colors:text-[CanvasText]',
-            // Border
-            'border border-zinc-950/10 group-data-active:border-zinc-950/20 group-data-hover:border-zinc-950/20 dark:border-white/10 dark:group-data-active:border-white/20 dark:group-data-hover:border-white/20',
-            // Background color
-            'bg-transparent dark:bg-white/5',
-            // Invalid state
-            'group-data-invalid:border-red-500 group-data-hover:group-data-invalid:border-red-500 dark:group-data-invalid:border-red-600 dark:data-hover:group-data-invalid:border-red-600',
-            // Disabled state
-            'group-data-disabled:border-zinc-950/20 group-data-disabled:opacity-100 dark:group-data-disabled:border-white/15 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:data-hover:border-white/15',
-          ])}
-        />
+        <span className="block truncate text-zinc-500">
+          {placeholder || 'Select an option'}
+        </span>
         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <svg
             className="size-5 stroke-zinc-500 group-data-disabled:stroke-zinc-600 sm:size-4 dark:stroke-zinc-400 forced-colors:stroke-[CanvasText]"
@@ -74,8 +54,8 @@ export function Listbox<T>({
             <path d="M10.25 5.25L8 3L5.75 5.25" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
-      </Headless.ListboxButton>
-      <Headless.ListboxOptions
+      </ListboxButton>
+      <ListboxOptions
         transition
         anchor="selection start"
         className={clsx(
@@ -96,8 +76,8 @@ export function Listbox<T>({
         )}
       >
         {options}
-      </Headless.ListboxOptions>
-    </Headless.Listbox>
+      </ListboxOptions>
+    </HeadlessListbox>
   )
 }
 
@@ -106,7 +86,7 @@ export function ListboxOption<T>({
   className,
   ...props
 }: { className?: string; children?: React.ReactNode } & Omit<
-  Headless.ListboxOptionProps<'div', T>,
+  React.ComponentProps<typeof ListboxOption>,
   'as' | 'className'
 >) {
   let sharedClasses = clsx(
@@ -121,7 +101,7 @@ export function ListboxOption<T>({
   )
 
   return (
-    <Headless.ListboxOption as={Fragment} {...props}>
+    <ListboxOption as={Fragment} {...props}>
       {({ selectedOption }) => {
         if (selectedOption) {
           return <div className={clsx(className, sharedClasses)}>{children}</div>
@@ -154,7 +134,7 @@ export function ListboxOption<T>({
           </div>
         )
       }}
-    </Headless.ListboxOption>
+    </ListboxOption>
   )
 }
 
