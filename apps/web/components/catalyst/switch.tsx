@@ -21,9 +21,9 @@ export function SwitchGroup({ className, ...props }: React.ComponentPropsWithout
 export function SwitchField({
   className,
   ...props
-}: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
+}: { className?: string } & React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <Headless.Field
+    <div
       data-slot="field"
       {...props}
       className={clsx(
@@ -143,7 +143,16 @@ export function Switch({
 }: {
   color?: Color
   className?: string
-} & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
+} & {
+  checked?: boolean
+  defaultChecked?: boolean
+  onChange?: (checked: boolean) => void
+  name?: string
+  value?: string
+  disabled?: boolean
+  form?: string
+  tabIndex?: number
+}) {
   return (
     <Headless.Switch
       data-slot="control"
