@@ -1,8 +1,6 @@
 'use client'
 
-import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
-import { LayoutGroup, motion } from 'motion/react'
 import React, { forwardRef, useId } from 'react'
 import { TouchTarget } from './button'
 import { Link } from './link'
@@ -51,9 +49,7 @@ export function SidebarSection({ className, ...props }: React.ComponentPropsWith
   let id = useId()
 
   return (
-    <LayoutGroup id={id}>
-      <div {...props} data-slot="section" className={clsx(className, 'flex flex-col gap-0.5')} />
-    </LayoutGroup>
+    <div {...props} data-slot="section" className={clsx(className, 'flex flex-col gap-0.5')} />
   )
 }
 
@@ -76,11 +72,14 @@ export const SidebarItem = forwardRef(function SidebarItem(
     current,
     className,
     children,
+    href,
     ...props
-  }: { current?: boolean; className?: string; children: React.ReactNode } & (
-    | ({ href?: never } & Omit<Headless.ButtonProps, 'as' | 'className'>)
-    | ({ href: string } & Omit<Headless.ButtonProps<typeof Link>, 'as' | 'className'>)
-  ),
+  }: { 
+    current?: boolean
+    className?: string
+    children: React.ReactNode
+    href?: string
+  } & Omit<React.ComponentPropsWithoutRef<'button'>, 'className' | 'children'>,
   ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>
 ) {
   let classes = clsx(
@@ -108,30 +107,28 @@ export const SidebarItem = forwardRef(function SidebarItem(
   return (
     <span className={clsx(className, 'relative')}>
       {current && (
-        <motion.span
-          layoutId="current-indicator"
+        <span
           className="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 dark:bg-white"
         />
       )}
-      {typeof props.href === 'string' ? (
-        <Headless.CloseButton
-          as={Link}
-          {...props}
+      {href ? (
+        <Link
+          href={href}
           className={classes}
           data-current={current ? 'true' : undefined}
-          ref={ref}
+          ref={ref as React.ForwardedRef<HTMLAnchorElement>}
         >
           <TouchTarget>{children}</TouchTarget>
-        </Headless.CloseButton>
+        </Link>
       ) : (
-        <Headless.Button
+        <button
           {...props}
           className={clsx('cursor-default', classes)}
           data-current={current ? 'true' : undefined}
-          ref={ref}
+          ref={ref as React.ForwardedRef<HTMLButtonElement>}
         >
           <TouchTarget>{children}</TouchTarget>
-        </Headless.Button>
+        </button>
       )}
     </span>
   )
