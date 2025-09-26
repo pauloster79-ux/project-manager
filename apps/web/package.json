@@ -1,5 +1,5 @@
 {
-  "name": "ai-pm-hub-web",
+  "name": "@pm/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
