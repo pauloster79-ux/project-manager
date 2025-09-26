@@ -6,10 +6,17 @@
     "build": "cd apps/web && npm ci && npm run build",
     "dev": "cd apps/web && npm run dev",
     "start": "cd apps/web && npm start",
-    "install": "cd apps/web && npm install"
+    "install": "cd apps/web && npm install",
+    "db:migrate": "ts-node --transpile-only scripts/run-migrations.ts",
+    "db:test": "ts-node --transpile-only scripts/test-db.ts"
+  },
+  "dependencies": {
+    "pg": "^8.11.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/pg": "^8.10.0",
+    "ts-node": "^10.9.0",
     "typescript": "^5.0.0"
   }
 }
