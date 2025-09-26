@@ -1,13 +1,22 @@
-import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
+import React from 'react'
 
 export function RadioGroup({
   className,
+  children,
+  value,
+  onChange,
   ...props
-}: { className?: string } & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
+}: { 
+  className?: string
+  children: React.ReactNode
+  value?: string
+  onChange?: (value: string) => void
+}) {
   return (
-    <Headless.RadioGroup
+    <div
       data-slot="control"
+      role="radiogroup"
       {...props}
       className={clsx(
         className,
@@ -16,16 +25,22 @@ export function RadioGroup({
         // With descriptions
         'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
-    />
+    >
+      {children}
+    </div>
   )
 }
 
 export function RadioField({
   className,
+  children,
   ...props
-}: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
+}: { 
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <Headless.Field
+    <div
       data-slot="field"
       {...props}
       className={clsx(
@@ -41,7 +56,9 @@ export function RadioField({
         // With description
         'has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
-    />
+    >
+      {children}
+    </div>
   )
 }
 
@@ -120,14 +137,28 @@ type Color = keyof typeof colors
 export function Radio({
   color = 'dark/zinc',
   className,
+  value,
+  checked,
+  onChange,
   ...props
-}: { color?: Color; className?: string } & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
+}: { 
+  color?: Color
+  className?: string
+  value?: string
+  checked?: boolean
+  onChange?: (checked: boolean) => void
+}) {
   return (
-    <Headless.Radio
-      data-slot="control"
-      {...props}
-      className={clsx(className, 'group inline-flex focus:outline-hidden')}
-    >
+    <label className={clsx(className, 'group inline-flex focus:outline-hidden cursor-pointer')}>
+      <input
+        type="radio"
+        data-slot="control"
+        value={value}
+        checked={checked}
+        onChange={(e) => onChange?.(e.target.checked)}
+        className="sr-only"
+        {...props}
+      />
       <span className={clsx([base, colors[color]])}>
         <span
           className={clsx(
@@ -137,6 +168,6 @@ export function Radio({
           )}
         />
       </span>
-    </Headless.Radio>
+    </label>
   )
 }
