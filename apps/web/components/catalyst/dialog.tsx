@@ -43,7 +43,7 @@ export function Dialog({
             )}
           >
             {children}
-          </Headless.DialogPanel>
+          </DialogPanel>
         </div>
       </div>
     </HeadlessDialog>
