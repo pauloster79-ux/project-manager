@@ -1,32 +1,43 @@
-import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
 import type React from 'react'
 
 export function Fieldset({
   className,
+  children,
   ...props
-}: { className?: string } & Omit<Headless.FieldsetProps, 'as' | 'className'>) {
+}: { 
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <Headless.Fieldset
+    <fieldset
       {...props}
       className={clsx(className, '*:data-[slot=text]:mt-1 [&>*+[data-slot=control]]:mt-6')}
-    />
+    >
+      {children}
+    </fieldset>
   )
 }
 
 export function Legend({
   className,
+  children,
   ...props
-}: { className?: string } & Omit<Headless.LegendProps, 'as' | 'className'>) {
+}: { 
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <Headless.Legend
+    <legend
       data-slot="legend"
       {...props}
       className={clsx(
         className,
         'text-base/6 font-semibold text-zinc-950 data-disabled:opacity-50 sm:text-sm/6 dark:text-white'
       )}
-    />
+    >
+      {children}
+    </legend>
   )
 }
 
@@ -34,9 +45,16 @@ export function FieldGroup({ className, ...props }: React.ComponentPropsWithoutR
   return <div data-slot="control" {...props} className={clsx(className, 'space-y-8')} />
 }
 
-export function Field({ className, ...props }: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
+export function Field({ 
+  className, 
+  children,
+  ...props 
+}: { 
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <Headless.Field
+    <div
       {...props}
       className={clsx(
         className,
@@ -47,45 +65,68 @@ export function Field({ className, ...props }: { className?: string } & Omit<Hea
         '[&>[data-slot=control]+[data-slot=error]]:mt-3',
         '*:data-[slot=label]:font-medium'
       )}
-    />
+    >
+      {children}
+    </div>
   )
 }
 
-export function Label({ className, ...props }: { className?: string } & Omit<Headless.LabelProps, 'as' | 'className'>) {
+export function Label({ 
+  className, 
+  children,
+  ...props 
+}: { 
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <Headless.Label
+    <label
       data-slot="label"
       {...props}
       className={clsx(
         className,
         'text-base/6 text-zinc-950 select-none data-disabled:opacity-50 sm:text-sm/6 dark:text-white'
       )}
-    />
+    >
+      {children}
+    </label>
   )
 }
 
 export function Description({
   className,
+  children,
   ...props
-}: { className?: string } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
+}: { 
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <Headless.Description
+    <div
       data-slot="description"
       {...props}
       className={clsx(className, 'text-base/6 text-zinc-500 data-disabled:opacity-50 sm:text-sm/6 dark:text-zinc-400')}
-    />
+    >
+      {children}
+    </div>
   )
 }
 
 export function ErrorMessage({
   className,
+  children,
   ...props
-}: { className?: string } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
+}: { 
+  className?: string
+  children: React.ReactNode
+}) {
   return (
-    <Headless.Description
+    <div
       data-slot="error"
       {...props}
       className={clsx(className, 'text-base/6 text-red-600 data-disabled:opacity-50 sm:text-sm/6 dark:text-red-500')}
-    />
+    >
+      {children}
+    </div>
   )
 }
