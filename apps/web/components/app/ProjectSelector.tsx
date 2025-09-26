@@ -1,34 +1,40 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Listbox, ListboxOption } from "@/components/catalyst/listbox";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/catalyst/select-advanced";
 
-// Replace with GET /api/projects in Packet 7a
-const STUB_PROJECTS = [
-  { id: "demo", name: "Demo Project", icon: "⚙️" },
-  { id: "alpha", name: "Alpha Rollout", icon: "🚀" },
-];
+type Project = { id: string; name: string };
 
 export function ProjectSelector({ currentProjectId }: { currentProjectId: string }) {
   const router = useRouter();
-  
-  // If the current project ID doesn't match any stub projects, use the first one as default
-  const validProjectId = STUB_PROJECTS.find(p => p.id === currentProjectId)?.id || STUB_PROJECTS[0].id;
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/projects");
+        const data = await res.json();
+        setProjects(data.items || []);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const value = projects.find(p => p.id === currentProjectId)?.id ?? currentProjectId;
 
   return (
-    <Listbox
-      value={validProjectId}
-      onChange={(id) => router.push(`/projects/${id}/risks`)}
-      placeholder="Select project"
-    >
-      {STUB_PROJECTS.map((p) => (
-        <ListboxOption key={p.id} value={p.id}>
-          <div className="flex items-center gap-2">
-            <span>{p.icon}</span>
-            <span>{p.name}</span>
-          </div>
-        </ListboxOption>
-      ))}
-    </Listbox>
+    <Select value={value} onValueChange={(id) => router.push(`/projects/${id}/risks`)} disabled={loading || !projects.length}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder={loading ? "Loading…" : "Select project"} />
+      </SelectTrigger>
+      <SelectContent>
+        {projects.map((p) => (
+          <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
