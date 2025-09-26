@@ -209,7 +209,7 @@ export function Combobox<T>({
               onClick={() => handleOptionClick(option)}
             >
               <span className="flex min-w-0 items-center">
-                {children(option)}
+                {children(option as NonNullable<T>)}
               </span>
               <svg
                 className="relative col-start-2 hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4"
