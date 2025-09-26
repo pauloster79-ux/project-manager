@@ -1,7 +1,5 @@
-import { Dialog as HeadlessDialog, DialogBackdrop, DialogPanel, DialogTitle as HeadlessDialogTitle, Description as HeadlessDescription } from '@headlessui/react'
 import clsx from 'clsx'
 import type React from 'react'
-import { Text } from './text'
 
 const sizes = {
   xs: 'sm:max-w-xs',
@@ -19,43 +17,44 @@ export function Dialog({
   size = 'lg',
   className,
   children,
+  open,
+  onClose,
   ...props
-}: { size?: keyof typeof sizes; className?: string; children: React.ReactNode } & Omit<
-  React.ComponentProps<typeof HeadlessDialog>,
-  'as' | 'className'
->) {
-  return (
-    <HeadlessDialog {...props}>
-      <DialogBackdrop
-        transition
-        className="fixed inset-0 flex w-screen justify-center overflow-y-auto bg-zinc-950/25 px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16 dark:bg-zinc-950/50"
-      />
+}: { 
+  size?: keyof typeof sizes
+  className?: string
+  children: React.ReactNode
+  open?: boolean
+  onClose?: () => void
+} & Omit<React.ComponentPropsWithoutRef<'div'>, 'onClose'>) {
+  if (!open) return null
 
+  return (
+    <div className="fixed inset-0 z-50 flex w-screen justify-center overflow-y-auto bg-zinc-950/25 px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-16 dark:bg-zinc-950/50">
       <div className="fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0">
         <div className="grid min-h-full grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr] sm:p-4">
-          <DialogPanel
-            transition
+          <div
             className={clsx(
               className,
               sizes[size],
-              'row-start-2 w-full min-w-0 rounded-t-3xl bg-white p-(--gutter) shadow-lg ring-1 ring-zinc-950/10 [--gutter:--spacing(8)] sm:mb-auto sm:rounded-2xl dark:bg-zinc-900 dark:ring-white/10 forced-colors:outline',
-              'transition duration-100 will-change-transform data-closed:translate-y-12 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:data-closed:translate-y-0 sm:data-closed:data-enter:scale-95'
+              'row-start-2 w-full min-w-0 rounded-t-3xl bg-white p-8 shadow-lg ring-1 ring-zinc-950/10 sm:mb-auto sm:rounded-2xl dark:bg-zinc-900 dark:ring-white/10'
             )}
+            {...props}
           >
             {children}
-          </DialogPanel>
+          </div>
         </div>
       </div>
-    </HeadlessDialog>
+    </div>
   )
 }
 
 export function DialogTitle({
   className,
   ...props
-}: { className?: string } & Omit<React.ComponentProps<typeof HeadlessDialogTitle>, 'as' | 'className'>) {
+}: { className?: string } & React.ComponentPropsWithoutRef<'h2'>) {
   return (
-    <HeadlessDialogTitle
+    <h2
       {...props}
       className={clsx(className, 'text-lg/6 font-semibold text-balance text-zinc-950 sm:text-base/6 dark:text-white')}
     />
@@ -65,8 +64,8 @@ export function DialogTitle({
 export function DialogDescription({
   className,
   ...props
-}: { className?: string } & Omit<React.ComponentProps<typeof HeadlessDescription>, 'as' | 'className'>) {
-  return <HeadlessDescription as={Text} {...props} className={clsx(className, 'mt-2 text-pretty')} />
+}: { className?: string } & React.ComponentPropsWithoutRef<'p'>) {
+  return <p {...props} className={clsx(className, 'mt-2 text-pretty text-zinc-500 dark:text-zinc-400')} />
 }
 
 export function DialogBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
