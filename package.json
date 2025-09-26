@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "cd apps/web && npm install && npm run build",
+    "build": "cd apps/web && npm ci && npm run build",
     "dev": "cd apps/web && npm run dev",
-    "start": "cd apps/web && npm run start"
+    "start": "cd apps/web && npm start",
+    "install": "cd apps/web && npm install"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
