@@ -30,7 +30,7 @@ export function IssuesPanel({
   onApply?: (patch: Record<string, any>) => void;
 }) {
   return (
-    <Sheet open={open} onChange={onOpenChange}>
+    <Sheet open={open} onClose={() => onOpenChange(false)}>
       <SheetContent side="right" className="w-[480px]">
         <SheetHeader>
           <SheetTitle>Suggested Update</SheetTitle>
