@@ -11,14 +11,17 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "clsx": "^2.0.0",
+    "dotenv": "^16.4.5",
     "motion": "^12.23.22",
     "next": "14.0.0",
+    "pg": "^8.11.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/pg": "^8.10.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "autoprefixer": "^10.0.0",
