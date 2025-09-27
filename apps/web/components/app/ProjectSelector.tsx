@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Select, SelectTrigger, SelectItem, SelectValue } from "@/components/catalyst/select-advanced";
+import { Listbox, ListboxOption } from "@/components/catalyst/listbox";
 
 type Project = { id: string; name: string };
 
@@ -30,15 +30,18 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
   const value = selectedProject?.id ?? currentProjectId;
 
   return (
-    <Select value={value} onValueChange={(id) => router.push(`/projects/${id}/risks`)} disabled={loading || !projects.length}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder={loading ? "Loading…" : "Select project"}>
-          {selectedProject?.name || (loading ? "Loading…" : "Select project")}
-        </SelectValue>
-      </SelectTrigger>
+    <Listbox
+      value={value}
+      onChange={(id) => router.push(`/projects/${id}/risks`)}
+      disabled={loading || !projects.length}
+      placeholder={loading ? "Loading…" : "Select project"}
+      className="w-full"
+    >
       {projects.map((p) => (
-        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+        <ListboxOption key={p.id} value={p.id}>
+          {p.name}
+        </ListboxOption>
       ))}
-    </Select>
+    </Listbox>
   );
 }
