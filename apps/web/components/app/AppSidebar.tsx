@@ -18,9 +18,36 @@ export function AppSidebar({ projectId }: { projectId: string }) {
   return (
     <div className="flex h-full flex-col gap-6">
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
-          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm8 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
+        <div className="flex h-10 w-10 items-center justify-center">
+          <svg className="h-8 w-8" viewBox="0 0 100 100" fill="none">
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge> 
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            {/* Main organic shape with interconnected rounded elements */}
+            <path
+              d="M20 30 Q30 20, 40 30 Q50 40, 60 30 Q70 20, 80 30 Q85 40, 80 50 Q75 60, 70 50 Q60 40, 50 50 Q40 60, 30 50 Q25 40, 20 30 Z"
+              fill="#4A5568"
+              filter="url(#glow)"
+            />
+            <path
+              d="M25 35 Q35 25, 45 35 Q55 45, 65 35 Q75 25, 85 35 Q90 45, 85 55 Q80 65, 75 55 Q65 45, 55 55 Q45 65, 35 55 Q30 45, 25 35 Z"
+              fill="#718096"
+            />
+            <path
+              d="M30 40 Q40 30, 50 40 Q60 50, 70 40 Q80 30, 90 40 Q95 50, 90 60 Q85 70, 80 60 Q70 50, 60 60 Q50 70, 40 60 Q35 50, 30 40 Z"
+              fill="#A0AEC0"
+            />
+            {/* Central void/negative space */}
+            <path
+              d="M45 45 Q50 40, 55 45 Q60 50, 55 55 Q50 60, 45 55 Q40 50, 45 45 Z"
+              fill="#1A202C"
+            />
           </svg>
         </div>
         <Link href={`/projects/${projectId}`} className="text-xl font-semibold text-zinc-900">
