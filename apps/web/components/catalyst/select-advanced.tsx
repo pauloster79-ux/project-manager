@@ -26,7 +26,12 @@ const Select = React.forwardRef<
           {children}
         </Headless.Listbox.Button>
         <Headless.Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-zinc-800 dark:ring-zinc-700">
-          {children}
+          {React.Children.map(children, (child) => {
+            if (React.isValidElement(child) && child.type === SelectItem) {
+              return child;
+            }
+            return null;
+          })}
         </Headless.Listbox.Options>
       </div>
     </Headless.Listbox>

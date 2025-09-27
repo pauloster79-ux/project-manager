@@ -23,12 +23,15 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
     })();
   }, []);
 
-  const value = projects.find(p => p.id === currentProjectId)?.id ?? currentProjectId;
+  const selectedProject = projects.find(p => p.id === currentProjectId);
+  const value = selectedProject?.id ?? currentProjectId;
 
   return (
     <Select value={value} onValueChange={(id) => router.push(`/projects/${id}/risks`)} disabled={loading || !projects.length}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder={loading ? "Loading…" : "Select project"} />
+        <SelectValue placeholder={loading ? "Loading…" : "Select project"}>
+          {selectedProject?.name || (loading ? "Loading…" : "Select project")}
+        </SelectValue>
       </SelectTrigger>
       {projects.map((p) => (
         <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
