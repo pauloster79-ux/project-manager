@@ -14,7 +14,7 @@ import { z } from "zod";
 const BodySchema = z.object({
   project_id: UUID,
   entity_id: UUID.optional(),
-  diff: z.record(z.any()),
+  diff: z.record(z.string(), z.any()),
 });
 
 export async function POST(req: Request) {
