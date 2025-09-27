@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/card";
 
 export default function RisksPage({ params }: { params: { projectId: string } }) {
@@ -18,7 +19,11 @@ export default function RisksPage({ params }: { params: { projectId: string } })
         {items.map((r) => (
           <Card key={r.id} className="flex flex-col">
             <CardHeader>
-              <CardTitle className="text-base">{r.title}</CardTitle>
+              <CardTitle className="text-base">
+                <Link href={`/projects/${projectId}/risks/${r.id}`} className="hover:underline">
+                  {r.title}
+                </Link>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground">
