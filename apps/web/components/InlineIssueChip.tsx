@@ -30,7 +30,7 @@ export function InlineIssueChip({
     <div className="mt-2 flex items-center gap-2 text-sm">
       <Badge color={getBadgeColor(severity)}>{message}</Badge>
       {onApply && (
-        <Button size="sm" variant="ghost" onClick={onApply}>
+        <Button plain onClick={onApply}>
           {applyLabel}
         </Button>
       )}
