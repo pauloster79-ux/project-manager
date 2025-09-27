@@ -2,6 +2,10 @@
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { Client } from "pg";
+import { config } from "dotenv";
+
+// Load environment variables from .env file
+config();
 
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) throw new Error("DATABASE_URL not set");

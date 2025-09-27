@@ -11,6 +11,7 @@
     "db:test": "ts-node --transpile-only scripts/test-db.ts"
   },
   "dependencies": {
+    "dotenv": "^17.2.2",
     "pg": "^8.11.0"
   },
   "devDependencies": {
