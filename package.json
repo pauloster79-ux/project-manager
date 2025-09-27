@@ -1,23 +1,34 @@
 {
-  "name": "ai-pm-hub",
+  "name": "@pm/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "cd apps/web && npm ci && npm run build",
-    "dev": "cd apps/web && npm run dev",
-    "start": "cd apps/web && npm start",
-    "install": "cd apps/web && npm install",
-    "db:migrate": "ts-node --transpile-only scripts/run-migrations.ts",
-    "db:test": "ts-node --transpile-only scripts/test-db.ts"
+    "dev": "next dev",
+    "build": "npm ci && next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "dotenv": "^17.2.2",
-    "pg": "^8.11.0"
+    "@headlessui/react": "^1.7.17",
+    "clsx": "^2.0.0",
+    "dotenv": "^16.4.5",
+    "motion": "^12.23.22",
+    "next": "14.0.0",
+    "pg": "^8.11.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/pg": "^8.10.0",
-    "ts-node": "^10.9.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.0.0",
+    "postcss": "^8.0.0",
+    "tailwindcss": "^3.0.0",
     "typescript": "^5.0.0"
   }
 }
