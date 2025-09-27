@@ -9,11 +9,12 @@ import { packContextForRisk, packContextForQuestion } from "@/src/lib/retrieval"
 import { applyRiskRules } from "@/src/domain/risk/rules";
 import { scoreFromIssues, blockedFromIssues } from "@/src/domain/risk/score";
 import { riskGatewaySystemPrompt, buildRiskGatewayUserPayload } from "@/src/domain/risk/prompt";
+import { z } from "zod";
 
-const BodySchema = (await import("zod")).z.object({
+const BodySchema = z.object({
   project_id: UUID,
   entity_id: UUID.optional(),
-  diff: (await import("zod")).z.record((await import("zod")).z.any()),
+  diff: z.record(z.any()),
 });
 
 export async function POST(req: Request) {
