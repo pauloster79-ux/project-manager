@@ -3,10 +3,9 @@ services:
     name: ai-pm-hub-web
     env: node
     plan: free
-    buildCommand: cd apps/web && npm run build
-    startCommand: cd apps/web && npm run start
+    rootDir: apps/web
+    buildCommand: npm run build
+    startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
-        value: postgresql://postgres.whyzabaxiqaqffezmrzh:2%21nXxiC%21%3F68Jn7T@aws-1-eu-west-2.pooler.supabase.com:6543/postgres
