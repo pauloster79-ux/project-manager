@@ -1,7 +1,6 @@
 // app/api/decisions/route.ts
-import { NextResponse } from "next/server";
 import { query } from "@/src/lib/db";
-import { apiError } from "@/src/lib/apiError";
+import { okJSON, apiError } from "@/src/lib/errors";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -40,7 +39,7 @@ export async function GET(req: Request) {
     query<{ total: number }>(countSql, params),
   ]);
 
-  return NextResponse.json({
+  return okJSON({
     items: itemsRes.rows,
     page,
     pageSize: limit,
