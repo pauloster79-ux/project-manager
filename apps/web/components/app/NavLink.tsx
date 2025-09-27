@@ -17,7 +17,7 @@ export function NavLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+        "block w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors",
         active
           ? "bg-white text-zinc-900"
           : "text-zinc-700 hover:bg-zinc-200 hover:text-zinc-900"

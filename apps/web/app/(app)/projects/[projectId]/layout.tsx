@@ -17,8 +17,8 @@ export default function ProjectLayout({
       </div>
       <div className="mx-auto flex w-full">
         {/* Sidebar (hidden on mobile; shown on lg+) */}
-        <aside className="hidden lg:flex w-72 shrink-0 bg-zinc-100">
-          <div className="flex h-screen flex-col p-6">
+        <aside className="hidden lg:flex w-80 shrink-0 bg-zinc-100">
+          <div className="flex h-screen flex-col p-4 w-full">
             <AppSidebar projectId={projectId} />
           </div>
         </aside>

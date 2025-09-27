@@ -16,8 +16,8 @@ export function AppSidebar({ projectId }: { projectId: string }) {
   ];
 
   return (
-    <div className="flex h-full flex-col gap-6">
-      <div className="flex items-center gap-3">
+    <div className="flex h-full flex-col gap-6 w-full">
+      <div className="flex items-center gap-3 w-full">
         <div className="flex h-10 w-10 items-center justify-center">
           <svg className="h-8 w-8" viewBox="0 0 100 100" fill="none">
             <defs>
@@ -55,13 +55,13 @@ export function AppSidebar({ projectId }: { projectId: string }) {
         </Link>
       </div>
 
-      <div>
+      <div className="w-full">
         <ProjectSelector currentProjectId={projectId} />
       </div>
 
       <div className="h-px w-full bg-zinc-300" />
 
-      <nav aria-label="Project" className="flex flex-col gap-1">
+      <nav aria-label="Project" className="flex flex-col gap-1 w-full">
         {items.map((i) => (
           <NavLink key={i.href} href={i.href} active={pathname === i.href}>
             {i.label}
