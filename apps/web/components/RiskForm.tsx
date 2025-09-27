@@ -225,7 +225,7 @@ export function RiskForm({
           <div className="flex gap-2">
             <Button
               type="button"
-              variant="outline"
+              outline
               onClick={() => setPanelOpen(true)}
               title="Open issues & suggested update"
             >
