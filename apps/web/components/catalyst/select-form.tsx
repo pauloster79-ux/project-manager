@@ -77,10 +77,9 @@ const SelectValue = React.forwardRef<
     placeholder?: React.ReactNode;
   }
 >(({ className, children, placeholder, ...props }, ref) => {
-  const { value } = Headless.Listbox.useOptionContext();
   return (
     <span ref={ref} className={clsx("block truncate", className)} {...props}>
-      {value ? children : placeholder}
+      {children || placeholder}
     </span>
   );
 });
