@@ -33,7 +33,6 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
     <Listbox
       value={value}
       onChange={(id) => router.push(`/projects/${id}/risks`)}
-      disabled={loading || !projects.length}
       placeholder={loading ? "Loading…" : "Select project"}
       className="w-full"
     >
