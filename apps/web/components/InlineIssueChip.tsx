@@ -15,9 +15,20 @@ export function InlineIssueChip({
   onApply?: () => void;
   applyLabel?: string;
 }) {
+  // Map severity to Badge color
+  const getBadgeColor = (severity: string) => {
+    switch (severity) {
+      case "destructive": return "red";
+      case "warning": return "amber";
+      case "success": return "green";
+      case "outline": return "zinc";
+      default: return "zinc";
+    }
+  };
+
   return (
     <div className="mt-2 flex items-center gap-2 text-sm">
-      <Badge variant={severity}>{message}</Badge>
+      <Badge color={getBadgeColor(severity)}>{message}</Badge>
       {onApply && (
         <Button size="sm" variant="ghost" onClick={onApply}>
           {applyLabel}
