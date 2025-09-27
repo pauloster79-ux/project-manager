@@ -16,7 +16,15 @@ import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
 import { IssuesPanel } from "./IssuesPanel";
 
-type RiskFormValues = z.infer<typeof RiskSchema>;
+// Create a form-specific schema with required fields
+const RiskFormSchema = RiskSchema.partial().extend({
+  project_id: z.string(),
+  title: z.string().min(1, "Title is required"),
+  probability: z.number().min(1).max(5),
+  impact: z.number().min(1).max(5),
+});
+
+type RiskFormValues = z.infer<typeof RiskFormSchema>;
 
 // crude field mapping from issue message → form field (heuristic for UI hints)
 function mapIssueToField(message: string): keyof RiskFormValues | null {
@@ -42,7 +50,7 @@ export function RiskForm({
   const abortRef = useRef<AbortController | null>(null);
 
   const form = useForm<RiskFormValues>({
-    resolver: zodResolver(RiskSchema.partial()),
+    resolver: zodResolver(RiskFormSchema),
     defaultValues: {
       id: risk.id,
       project_id: projectId,
