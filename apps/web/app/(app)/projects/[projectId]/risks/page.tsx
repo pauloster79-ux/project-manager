@@ -8,12 +8,26 @@ export default function RisksPage({ params }: { params: { projectId: string } })
   const { projectId } = params;
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     fetch(`/api/risks?project_id=${projectId}&sort=exposure&order=desc&limit=20`)
-      .then(r => r.json())
+      .then(async (r) => {
+        if (!r.ok) {
+          throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+        }
+        return r.json();
+      })
       .then(d => {
         setItems(d.items || []);
+        setError(null);
+      })
+      .catch(err => {
+        console.error("Failed to fetch risks:", err);
+        setError(err.message);
+        setItems([]);
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [projectId]);
@@ -36,6 +50,20 @@ export default function RisksPage({ params }: { params: { projectId: string } })
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold">Risks</h1>
         <div className="text-sm text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">Risks</h1>
+        <div className="text-sm text-red-600">
+          Error loading risks: {error}
+        </div>
+        <div className="text-sm text-muted-foreground">
+          The database may not be initialized. Please check the health endpoint.
+        </div>
       </div>
     );
   }

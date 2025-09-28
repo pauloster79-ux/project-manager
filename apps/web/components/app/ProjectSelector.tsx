@@ -15,6 +15,9 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
     (async () => {
       try {
         const res = await fetch("/api/projects");
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
         const data = await res.json();
         setProjects(data.items || []);
       } catch (error) {
