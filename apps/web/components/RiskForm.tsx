@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { RiskSchema } from "@/src/schemas";
 import { validateRisk, ValidationResponse } from "@/lib/validationClient";
+import { applyRiskPatch } from "@/lib/applyPatch";
 import { Label } from "@/components/catalyst/label";
 import { Input } from "@/components/catalyst/input";
 import { Textarea } from "@/components/catalyst/textarea";
@@ -248,7 +249,31 @@ export function RiskForm({
         issues={validation?.issues ?? []}
         proposedPatch={validation?.proposed_patch ?? null}
         rationale={validation?.rationale ?? null}
-        disabledApply={true}
+        disabledApply={false}
+        onApply={async (patch) => {
+          if (!validation) return;
+          try {
+            const updated = await applyRiskPatch({
+              project_id: projectId,
+              id: risk.id,
+              patch,
+              llm_snapshot_id: validation.llm_snapshot_id,
+              if_match_updated_at: (risk.updated_at ?? baseRef.current?.updated_at) as string | undefined,
+            });
+            // refresh form baseline
+            baseRef.current = updated;
+            // sync form with server values (simple approach: reload page or set values)
+            Object.entries(updated).forEach(([k, v]) => {
+              // @ts-ignore
+              if (form.getValues().hasOwnProperty(k)) form.setValue(k as any, v as any, { shouldDirty: false });
+            });
+            setValidation(null);
+            setPanelOpen(false);
+            alert("Update applied.");
+          } catch (e: any) {
+            alert(e.message || "Failed to apply update");
+          }
+        }}
       />
     </>
   );

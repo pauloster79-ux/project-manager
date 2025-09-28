@@ -1,6 +1,9 @@
 // app/api/risks/route.ts
 import { query } from "@/src/lib/db";
 import { okJSON, apiError } from "@/src/lib/errors";
+import { RiskSchema } from "@/src/schemas";
+import { writeAudit } from "@/src/domain/audit";
+import { enqueue } from "@/src/lib/queue";
 
 const SORT_WHITELIST = new Set(["exposure","updated_at","next_review_date","title"]);
 
@@ -45,4 +48,40 @@ export async function GET(req: Request) {
     pageSize: limit,
     total: countRes.rows[0]?.total ?? 0,
   });
+}
+
+export async function POST(req: Request) {
+  const body = await req.json().catch(() => null);
+  if (!body) return apiError(400, "Invalid JSON");
+  // minimally validate required fields
+  const { project_id, title, probability, impact } =
+    RiskSchema.pick({ project_id: true, title: true, probability: true, impact: true }).parse(body);
+
+  const fields = [
+    "project_id", "title", "summary", "owner_id", "probability", "impact",
+    "mitigation", "next_review_date", "validation_status", "validation_score",
+    "issues", "ai_rewrite", "coherence_refs", "provenance", "llm_snapshot_id"
+  ];
+  const vals = fields.map((k) => (k in body ? body[k] : null));
+  const placeholders = fields.map((_, i) => `$${i + 1}`).join(",");
+
+  const { rows } = await query(
+    `insert into risks (${fields.join(",")}) values (${placeholders}) returning *`,
+    vals
+  );
+  const row = rows[0];
+
+  await writeAudit({
+    project_id,
+    actor_source: "ui",
+    entity_type: "risk",
+    entity_id: row.id,
+    action: "create",
+    after: row,
+  });
+
+  // enqueue initial embedding
+  await enqueue("embed:entity", { project_id, entity_type: "risk", entity_id: row.id });
+
+  return okJSON(row);
 }

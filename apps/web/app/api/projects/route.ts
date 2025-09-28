@@ -1,6 +1,6 @@
 // app/api/projects/route.ts
 import { query } from "@/src/lib/db";
-import { okJSON } from "@/src/lib/errors";
+import { okJSON, apiError } from "@/src/lib/errors";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -37,4 +37,14 @@ export async function GET(req: Request) {
     pageSize: limit,
     total: countRes.rows[0]?.total ?? 0,
   });
+}
+
+export async function POST(req: Request) {
+  const { name, description } = await req.json().catch(() => ({}));
+  if (!name || typeof name !== "string") return apiError(400, "name is required");
+  const { rows } = await query(
+    `insert into projects (name, description) values ($1,$2) returning *`,
+    [name.trim(), description ?? null]
+  );
+  return okJSON(rows[0]);
 }
