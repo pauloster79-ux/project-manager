@@ -79,7 +79,6 @@ export function DecisionForm({
         signal: abortRef.current.signal,
       });
       setValidation(res);
-      setPanelOpen(true);
     } catch (e) {
       // optional toast
       console.error(e);

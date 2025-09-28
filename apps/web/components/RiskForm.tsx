@@ -86,7 +86,6 @@ export function RiskForm({
         signal: abortRef.current.signal,
       });
       setValidation(res);
-      setPanelOpen(true);
     } catch (e) {
       // optional: surface a toast
       console.error(e);
