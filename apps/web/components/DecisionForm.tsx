@@ -18,7 +18,14 @@ import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
 import { IssuesPanel } from "./IssuesPanel";
 
-type DecisionFormValues = z.infer<typeof DecisionSchema>;
+// Create a form-specific schema with required fields
+const DecisionFormSchema = DecisionSchema.partial().extend({
+  project_id: z.string(),
+  title: z.string().min(1, "Title is required"),
+  status: z.enum(["Proposed", "Approved", "Rejected"]),
+});
+
+type DecisionFormValues = z.infer<typeof DecisionFormSchema>;
 
 function mapIssueToField(message: string): keyof DecisionFormValues | null {
   const m = message.toLowerCase();
@@ -43,7 +50,7 @@ export function DecisionForm({
   const baseRef = useRef<any>(decision);
 
   const form = useForm<DecisionFormValues>({
-    resolver: zodResolver(DecisionSchema.partial()),
+    resolver: zodResolver(DecisionFormSchema),
     defaultValues: {
       id: decision.id,
       project_id: projectId,
