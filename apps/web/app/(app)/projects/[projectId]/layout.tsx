@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { MobileTopBar } from "@/components/app/MobileTopBar";
+import { ChatDockWrapper } from "@/components/ChatDockWrapper";
 
 export default function ProjectLayout({
   children,
@@ -25,6 +26,11 @@ export default function ProjectLayout({
 
         {/* Content */}
         <main className="flex-1 bg-white p-8">{children}</main>
+
+        {/* Chat Dock (hidden on mobile; shown on lg+) */}
+        <div className="hidden lg:block">
+          <ChatDockWrapper projectId={projectId} />
+        </div>
       </div>
     </div>
   );

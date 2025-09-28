@@ -16,6 +16,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/
 import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
 import { IssuesPanel } from "./IssuesPanel";
+import { prefillChat } from "@/lib/chatBridge";
 
 // Create a form-specific schema with required fields
 const RiskFormSchema = RiskSchema.partial().extend({
@@ -231,6 +232,19 @@ export function RiskForm({
               title="Open issues & suggested update"
             >
               Review Suggested Update
+            </Button>
+            <Button
+              type="button"
+              outline
+              onClick={() =>
+                prefillChat({
+                  question:
+                    "Explain this risk in 5 bullets: exposure, mitigation, owner, next review date, contradictions (cite docs).",
+                  scope: { type: "risk", id: risk.id },
+                })
+              }
+            >
+              Explain this risk
             </Button>
             <Button
               type="button"

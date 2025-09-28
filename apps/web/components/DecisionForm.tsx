@@ -17,6 +17,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/
 import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
 import { IssuesPanel } from "./IssuesPanel";
+import { prefillChat } from "@/lib/chatBridge";
 
 // Create a form-specific schema with required fields
 const DecisionFormSchema = DecisionSchema.partial().extend({
@@ -169,6 +170,19 @@ export function DecisionForm({
           <div className="flex gap-2">
             <Button type="button" outline onClick={() => setPanelOpen(true)}>
               Review Suggested Update
+            </Button>
+            <Button
+              type="button"
+              outline
+              onClick={() =>
+                prefillChat({
+                  question:
+                    "Explain this decision: status, who approves, rationale, risks, next steps (cite docs).",
+                  scope: { type: "decision", id: decision.id },
+                })
+              }
+            >
+              Explain this decision
             </Button>
             <Button type="button" disabled title="You can also wire a full-form Save using PATCH like Packet 9">
               Save (full form)
