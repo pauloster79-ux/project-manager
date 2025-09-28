@@ -27,8 +27,8 @@ export default function ProjectLayout({
         {/* Content */}
         <main className="flex-1 bg-white p-8">{children}</main>
 
-        {/* Chat Dock (hidden on mobile; shown on lg+) */}
-        <div className="hidden lg:block">
+        {/* Chat Dock (hidden on mobile; shown on md+) */}
+        <div className="hidden md:block">
           <ChatDockWrapper projectId={projectId} />
         </div>
       </div>

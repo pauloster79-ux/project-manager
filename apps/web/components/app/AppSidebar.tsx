@@ -13,7 +13,10 @@ export function AppSidebar({ projectId }: { projectId: string }) {
     { href: `/projects/${projectId}/risks`, label: "Risks" },
     { href: `/projects/${projectId}/decisions`, label: "Decisions" },
     { href: `/projects/${projectId}/documents`, label: "Documents" },
-    { href: `/projects/${projectId}/qa`, label: "Q&A" },
+  ];
+
+  const orgItems = [
+    { href: `/org/people`, label: "People" },
   ];
 
   return (
@@ -41,6 +44,16 @@ export function AppSidebar({ projectId }: { projectId: string }) {
 
       <nav aria-label="Project" className="flex flex-col gap-1 w-full">
         {items.map((i) => (
+          <NavLink key={i.href} href={i.href} active={pathname === i.href}>
+            {i.label}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="h-px w-full bg-zinc-300" />
+
+      <nav aria-label="Organization" className="flex flex-col gap-1 w-full">
+        {orgItems.map((i) => (
           <NavLink key={i.href} href={i.href} active={pathname === i.href}>
             {i.label}
           </NavLink>

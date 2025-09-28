@@ -16,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/card";
 import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
-import { IssuesPanel } from "./IssuesPanel";
 import { prefillChat } from "@/lib/chatBridge";
 
 // Create a form-specific schema with required fields
@@ -46,7 +45,6 @@ export function DecisionForm({
   decision: any; // row from /api/decisions/[id]
 }) {
   const [validation, setValidation] = useState<DecisionValidationResponse | null>(null);
-  const [panelOpen, setPanelOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const baseRef = useRef<any>(decision);
 
@@ -168,9 +166,6 @@ export function DecisionForm({
           </div>
 
           <div className="flex gap-2">
-            <Button type="button" outline onClick={() => setPanelOpen(true)}>
-              Review Suggested Update
-            </Button>
             <Button
               type="button"
               outline
@@ -191,36 +186,6 @@ export function DecisionForm({
         </CardContent>
       </Card>
 
-      <IssuesPanel
-        open={panelOpen}
-        onOpenChange={setPanelOpen}
-        issues={validation?.issues ?? []}
-        proposedPatch={validation?.proposed_patch ?? null}
-        rationale={validation?.rationale ?? null}
-        disabledApply={false}
-        onApply={async (patch) => {
-          if (!validation) return;
-          try {
-            const updated = await applyDecisionPatch({
-              project_id: projectId,
-              id: decision.id,
-              patch,
-              llm_snapshot_id: validation.llm_snapshot_id,
-              if_match_updated_at: (decision.updated_at ?? baseRef.current?.updated_at) as string | undefined,
-            });
-            baseRef.current = updated;
-            Object.entries(updated).forEach(([k, v]) => {
-              // @ts-ignore
-              if (form.getValues().hasOwnProperty(k)) form.setValue(k as any, v as any, { shouldDirty: false });
-            });
-            setValidation(null);
-            setPanelOpen(false);
-            alert("Decision updated.");
-          } catch (e: any) {
-            alert(e.message || "Failed to apply update");
-          }
-        }}
-      />
     </>
   );
 }

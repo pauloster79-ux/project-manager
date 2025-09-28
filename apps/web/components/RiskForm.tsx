@@ -15,7 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/card";
 import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
-import { IssuesPanel } from "./IssuesPanel";
 import { prefillChat } from "@/lib/chatBridge";
 
 // Create a form-specific schema with required fields
@@ -48,7 +47,6 @@ export function RiskForm({
   risk: any; // fetched row from /api/risks/[id]
 }) {
   const [validation, setValidation] = useState<ValidationResponse | null>(null);
-  const [panelOpen, setPanelOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const form = useForm<RiskFormValues>({
@@ -228,14 +226,6 @@ export function RiskForm({
             <Button
               type="button"
               outline
-              onClick={() => setPanelOpen(true)}
-              title="Open issues & suggested update"
-            >
-              Review Suggested Update
-            </Button>
-            <Button
-              type="button"
-              outline
               onClick={() =>
                 prefillChat({
                   question:
@@ -257,38 +247,6 @@ export function RiskForm({
         </CardContent>
       </Card>
 
-      <IssuesPanel
-        open={panelOpen}
-        onOpenChange={setPanelOpen}
-        issues={validation?.issues ?? []}
-        proposedPatch={validation?.proposed_patch ?? null}
-        rationale={validation?.rationale ?? null}
-        disabledApply={false}
-        onApply={async (patch) => {
-          if (!validation) return;
-          try {
-            const updated = await applyRiskPatch({
-              project_id: projectId,
-              id: risk.id,
-              patch,
-              llm_snapshot_id: validation.llm_snapshot_id,
-              if_match_updated_at: (risk.updated_at ?? baseRef.current?.updated_at) as string | undefined,
-            });
-            // refresh form baseline
-            baseRef.current = updated;
-            // sync form with server values (simple approach: reload page or set values)
-            Object.entries(updated).forEach(([k, v]) => {
-              // @ts-ignore
-              if (form.getValues().hasOwnProperty(k)) form.setValue(k as any, v as any, { shouldDirty: false });
-            });
-            setValidation(null);
-            setPanelOpen(false);
-            alert("Update applied.");
-          } catch (e: any) {
-            alert(e.message || "Failed to apply update");
-          }
-        }}
-      />
     </>
   );
 }
