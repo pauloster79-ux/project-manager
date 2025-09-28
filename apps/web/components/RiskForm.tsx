@@ -237,10 +237,31 @@ export function RiskForm({
             </Button>
             <Button
               type="button"
-              disabled
-              title="Saving arrives in Packet 7"
+              onClick={async () => {
+                try {
+                  const formData = form.getValues();
+                  const response = await fetch(`/api/risks/${risk.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      ...formData,
+                      if_match_updated_at: risk.updated_at
+                    })
+                  });
+                  
+                  if (response.ok) {
+                    alert("Risk saved successfully!");
+                    window.location.reload();
+                  } else {
+                    const error = await response.json();
+                    alert(`Failed to save: ${error.message || "Unknown error"}`);
+                  }
+                } catch (error) {
+                  alert(`Error saving risk: ${error instanceof Error ? error.message : "Unknown error"}`);
+                }
+              }}
             >
-              Save (Packet 7)
+              Save
             </Button>
           </div>
         </CardContent>

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ProjectSelector } from "./ProjectSelector";
 import { NavLink } from "./NavLink";
 import { OrgSwitcher } from "../OrgSwitcher";
+import { DatabaseInit } from "../DatabaseInit";
 
 export function AppSidebar({ projectId }: { projectId: string }) {
   const pathname = usePathname();
@@ -16,7 +17,7 @@ export function AppSidebar({ projectId }: { projectId: string }) {
   ];
 
   const orgItems = [
-    { href: `/org/people`, label: "People" },
+    { href: `/projects/${projectId}/people`, label: "People" },
   ];
 
   return (
@@ -60,7 +61,10 @@ export function AppSidebar({ projectId }: { projectId: string }) {
         ))}
       </nav>
 
-      <div className="mt-auto text-xs text-zinc-600">Europe/London</div>
-    </div>
-  );
-}
+            <div className="mt-auto space-y-4">
+              <DatabaseInit />
+              <div className="text-xs text-zinc-600">Europe/London</div>
+            </div>
+          </div>
+        );
+      }

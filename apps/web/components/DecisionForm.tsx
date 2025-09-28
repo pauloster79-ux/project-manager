@@ -178,8 +178,33 @@ export function DecisionForm({
             >
               Explain this decision
             </Button>
-            <Button type="button" disabled title="You can also wire a full-form Save using PATCH like Packet 9">
-              Save (full form)
+            <Button 
+              type="button" 
+              onClick={async () => {
+                try {
+                  const formData = form.getValues();
+                  const response = await fetch(`/api/decisions/${decision.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      ...formData,
+                      if_match_updated_at: decision.updated_at
+                    })
+                  });
+                  
+                  if (response.ok) {
+                    alert("Decision saved successfully!");
+                    window.location.reload();
+                  } else {
+                    const error = await response.json();
+                    alert(`Failed to save: ${error.message || "Unknown error"}`);
+                  }
+                } catch (error) {
+                  alert(`Error saving decision: ${error instanceof Error ? error.message : "Unknown error"}`);
+                }
+              }}
+            >
+              Save
             </Button>
           </div>
         </CardContent>
