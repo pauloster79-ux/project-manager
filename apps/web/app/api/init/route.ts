@@ -90,7 +90,7 @@ export async function POST() {
     
   } catch (error) {
     return apiError(500, "Database initialization failed", { 
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     });
   }
 }

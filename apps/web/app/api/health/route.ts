@@ -32,7 +32,7 @@ export async function GET() {
     return okJSON(status);
   } catch (error) {
     return apiError(500, "Database connection failed", { 
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       database: "disconnected"
     });
   }
