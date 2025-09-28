@@ -18,7 +18,7 @@ export const Textarea = forwardRef(function Textarea(
         // Basic layout
         'relative block w-full',
         // Background color + shadow applied to inset pseudo element, so shadow blends with border in light mode
-        'before:absolute before:inset-px before:rounded-[calc(var(--radius-lg)-1px)] before:bg-white before:shadow-sm',
+        'before:absolute before:inset-px before:rounded-lg before:bg-white before:shadow-sm',
         // Background color is moved to control and shadow is removed in dark mode so hide `before` pseudo
         'dark:before:hidden',
         // Focus ring
@@ -32,7 +32,7 @@ export const Textarea = forwardRef(function Textarea(
         {...props}
         className={clsx([
           // Basic layout
-          'relative block h-full w-full appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
+          'relative block h-full w-full appearance-none rounded-lg px-3 py-2 sm:px-3 sm:py-2',
           // Typography
           'text-base/6 text-zinc-950 placeholder:text-zinc-500 sm:text-sm/6 dark:text-white',
           // Border

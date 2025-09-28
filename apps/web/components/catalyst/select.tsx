@@ -16,7 +16,7 @@ export const Select = forwardRef(function Select(
         // Basic layout
         'group relative block w-full',
         // Background color + shadow applied to inset pseudo element, so shadow blends with border in light mode
-        'before:absolute before:inset-px before:rounded-[calc(var(--radius-lg)-1px)] before:bg-white before:shadow-sm',
+        'before:absolute before:inset-px before:rounded-lg before:bg-white before:shadow-sm',
         // Background color is moved to control and shadow is removed in dark mode so hide `before` pseudo
         'dark:before:hidden',
         // Focus ring
@@ -31,11 +31,11 @@ export const Select = forwardRef(function Select(
         {...props}
         className={clsx([
           // Basic layout
-          'relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
+          'relative block w-full appearance-none rounded-lg py-2 sm:py-2',
           // Horizontal padding
           multiple
-            ? 'px-[calc(--spacing(3.5)-1px)] sm:px-[calc(--spacing(3)-1px)]'
-            : 'pr-[calc(--spacing(10)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pr-[calc(--spacing(9)-1px)] sm:pl-[calc(--spacing(3)-1px)]',
+            ? 'px-3 sm:px-3'
+            : 'pr-10 pl-3 sm:pr-9 sm:pl-3',
           // Options (multi-select)
           '[&_optgroup]:font-semibold',
           // Typography
