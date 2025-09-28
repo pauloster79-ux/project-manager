@@ -1,8 +1,8 @@
 // src/lib/llm/index.ts
 import { ensureJSON, sleep } from "./json";
 import { mockProvider } from "./providers/mock";
+import { openaiProvider } from "./providers/openai";
 // (Optional scaffolds)
-// import { openaiProvider } from "./providers/openai";
 // import { anthropicProvider } from "./providers/anthropic";
 // import { azureProvider } from "./providers/azure";
 
@@ -28,7 +28,7 @@ function pickProvider(): LLMProvider {
   const p = (process.env.LLM_PROVIDER || "mock").toLowerCase();
   switch (p) {
     case "mock": return mockProvider;
-    // case "openai": return openaiProvider;
+    case "openai": return openaiProvider;
     // case "anthropic": return anthropicProvider;
     // case "azure": return azureProvider;
     default: return mockProvider;
