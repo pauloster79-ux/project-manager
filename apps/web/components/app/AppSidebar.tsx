@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ProjectSelector } from "./ProjectSelector";
 import { NavLink } from "./NavLink";
+import { OrgSwitcher } from "../OrgSwitcher";
 
 export function AppSidebar({ projectId }: { projectId: string }) {
   const pathname = usePathname();
@@ -26,6 +27,10 @@ export function AppSidebar({ projectId }: { projectId: string }) {
         <Link href={`/projects/${projectId}`} className="text-xl font-semibold text-zinc-900">
           AI PM Hub
         </Link>
+      </div>
+
+      <div className="w-full">
+        <OrgSwitcher />
       </div>
 
       <div className="w-full">

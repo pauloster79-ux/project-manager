@@ -4,13 +4,23 @@ import { okJSON, apiError } from "@/src/lib/errors";
 import { RiskSchema } from "@/src/schemas";
 import { writeAudit } from "@/src/domain/audit";
 import { enqueue } from "@/src/lib/queue";
+import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
+import { requireAccess } from "@/src/lib/authz";
 
 const SORT_WHITELIST = new Set(["exposure","updated_at","next_review_date","title"]);
 
 export async function GET(req: Request) {
+  const user = await getCurrentUser();
+  const orgId = await getCurrentOrgId();
+  
   const url = new URL(req.url);
   const projectId = url.searchParams.get("project_id");
   if (!projectId) return apiError(400, "project_id is required");
+
+  // Check project belongs to current org and user can read it
+  const proj = await query(`select id, org_id from projects where id = $1`, [projectId]);
+  if (!proj.rows[0] || proj.rows[0].org_id !== orgId) return apiError(403, "Project not in current org");
+  await requireAccess({ userId: user.id, orgId, need: "project:read", projectId });
 
   const q = (url.searchParams.get("q") || "").trim();
   const sort = (url.searchParams.get("sort") || "exposure").toLowerCase();
@@ -51,11 +61,19 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const user = await getCurrentUser();
+  const orgId = await getCurrentOrgId();
+
   const body = await req.json().catch(() => null);
   if (!body) return apiError(400, "Invalid JSON");
   // minimally validate required fields
   const { project_id, title, probability, impact } =
     RiskSchema.pick({ project_id: true, title: true, probability: true, impact: true }).parse(body);
+
+  // Check project belongs to current org and user can edit it
+  const proj = await query(`select id, org_id from projects where id = $1`, [project_id]);
+  if (!proj.rows[0] || proj.rows[0].org_id !== orgId) return apiError(403, "Project not in current org");
+  await requireAccess({ userId: user.id, orgId, need: "project:edit", projectId: project_id });
 
   const fields = [
     "project_id", "title", "summary", "owner_id", "probability", "impact",
@@ -73,6 +91,7 @@ export async function POST(req: Request) {
 
   await writeAudit({
     project_id,
+    actor_user_id: user.id,
     actor_source: "ui",
     entity_type: "risk",
     entity_id: row.id,
