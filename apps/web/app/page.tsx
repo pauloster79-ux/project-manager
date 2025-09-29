@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { query } from "@/src/lib/db";
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const cookieStore = cookies();
   const userId = cookieStore.get("user_id")?.value;
