@@ -5,6 +5,7 @@ import { Button } from "@/components/catalyst/button";
 
 export function DatabaseInit() {
   const [initializing, setInitializing] = useState(false);
+  const [migrating, setMigrating] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [dbStatus, setDbStatus] = useState<any>(null);
 
@@ -58,6 +59,36 @@ export function DatabaseInit() {
     }
   };
 
+  const runMigrations = async () => {
+    setMigrating(true);
+    setStatus("🔄 Running database migrations...");
+    
+    try {
+      const response = await fetch("/api/migrate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setStatus("✅ Migrations completed! Now you can initialize the database.");
+        // Check status again after migration
+        setTimeout(() => {
+          checkDatabaseStatus();
+        }, 1000);
+      } else {
+        setStatus(`❌ Migration failed: ${data.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      setStatus(`❌ Migration error: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setMigrating(false);
+    }
+  };
+
   // Check status on component mount
   useEffect(() => {
     checkDatabaseStatus();
@@ -73,6 +104,14 @@ export function DatabaseInit() {
           className="w-full"
         >
           Check Status
+        </Button>
+        <Button
+          onClick={runMigrations}
+          disabled={migrating || (dbStatus?.ready)}
+          outline
+          className="w-full"
+        >
+          {migrating ? "Migrating..." : "Run Migrations"}
         </Button>
         <Button
           onClick={initializeDatabase}

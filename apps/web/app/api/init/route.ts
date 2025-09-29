@@ -3,6 +3,25 @@ import { query } from "@/src/lib/db";
 
 export async function POST() {
   try {
+    // First, check if tables exist
+    const tablesCheck = await query(`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name IN ('users', 'organizations', 'projects', 'risks', 'decisions', 'org_users', 'memberships')
+    `);
+    
+    const existingTables = tablesCheck.rows.map(row => row.table_name);
+    const requiredTables = ['users', 'organizations', 'projects', 'risks', 'decisions', 'org_users', 'memberships'];
+    const missingTables = requiredTables.filter(table => !existingTables.includes(table));
+    
+    if (missingTables.length > 0) {
+      return apiError(500, `Missing database tables: ${missingTables.join(', ')}. Please run migrations first.`, {
+        missingTables,
+        existingTables
+      });
+    }
+    
     // Check if we already have data
     const existingUsers = await query("SELECT COUNT(*) as count FROM users");
     const existingOrgs = await query("SELECT COUNT(*) as count FROM organizations");
