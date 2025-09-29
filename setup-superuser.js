@@ -26,10 +26,18 @@ async function setupSuperUser() {
     const orgResult = await client.query(`
       INSERT INTO organizations (name)
       VALUES ('Default Organization')
-      ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+      ON CONFLICT DO NOTHING
       RETURNING id
     `);
-    const orgId = orgResult.rows[0].id;
+    
+    let orgId;
+    if (orgResult.rows.length > 0) {
+      orgId = orgResult.rows[0].id;
+    } else {
+      // Organization already exists, get its ID
+      const existingOrg = await client.query(`SELECT id FROM organizations WHERE name = 'Default Organization' LIMIT 1`);
+      orgId = existingOrg.rows[0].id;
+    }
     console.log(`✅ Organization created: ${orgId}`);
 
     // Add user to organization as owner
@@ -46,10 +54,18 @@ async function setupSuperUser() {
     const projectResult = await client.query(`
       INSERT INTO projects (name, description, org_id)
       VALUES ($1, $2, $3)
-      ON CONFLICT (name, org_id) DO UPDATE SET description = EXCLUDED.description
+      ON CONFLICT DO NOTHING
       RETURNING id
     `, ['Demo Project', 'A demonstration project for testing', orgId]);
-    const projectId = projectResult.rows[0].id;
+    
+    let projectId;
+    if (projectResult.rows.length > 0) {
+      projectId = projectResult.rows[0].id;
+    } else {
+      // Project already exists, get its ID
+      const existingProject = await client.query(`SELECT id FROM projects WHERE name = 'Demo Project' AND org_id = $1 LIMIT 1`, [orgId]);
+      projectId = existingProject.rows[0].id;
+    }
     console.log(`✅ Demo project created: ${projectId}`);
 
     // Add user to project as PM
