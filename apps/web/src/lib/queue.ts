@@ -1,15 +1,18 @@
 // src/lib/queue.ts
-import PgBoss from "pg-boss";
+// Use dynamic imports to prevent pg-boss from being bundled for client
 
-let bossPromise: Promise<PgBoss | null> | null = null;
+let bossPromise: Promise<any> | null = null;
 
-async function startBoss(): Promise<PgBoss | null> {
+async function startBoss(): Promise<any> {
   if (process.env.WORKER_ENABLED === "false") return null;
   const conn = process.env.DATABASE_URL;
   if (!conn) return null;
-  const schema = process.env.BOSS_SCHEMA || "boss";
-  const boss = new PgBoss({ connectionString: conn, schema });
+  
   try {
+    // Dynamic import to prevent bundling
+    const PgBoss = (await import("pg-boss")).default;
+    const schema = process.env.BOSS_SCHEMA || "boss";
+    const boss = new PgBoss({ connectionString: conn, schema });
     await boss.start();
     return boss;
   } catch (error) {
