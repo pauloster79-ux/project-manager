@@ -6,48 +6,61 @@ import { writeAudit } from "@/src/domain/audit";
 import { enqueue } from "@/src/lib/queue";
 
 export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const projectId = url.searchParams.get("project_id");
-  if (!projectId) return apiError(400, "project_id is required");
+  try {
+    console.log("Decisions API called");
+    
+    const url = new URL(req.url);
+    const projectId = url.searchParams.get("project_id");
+    if (!projectId) return apiError(400, "project_id is required");
 
-  const q = (url.searchParams.get("q") || "").trim();
-  const status = url.searchParams.get("status"); // Proposed|Approved|Rejected
-  const page = Math.max(parseInt(url.searchParams.get("page") || "1", 10), 1);
-  const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "20", 10), 1), 50);
-  const offset = (page - 1) * limit;
+    const q = (url.searchParams.get("q") || "").trim();
+    const status = url.searchParams.get("status"); // Proposed|Approved|Rejected
+    const page = Math.max(parseInt(url.searchParams.get("page") || "1", 10), 1);
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "20", 10), 1), 50);
+    const offset = (page - 1) * limit;
 
-  const params: any[] = [projectId];
-  const where: string[] = [`project_id = $1`];
-  if (status) {
-    params.push(status);
-    where.push(`status = $${params.length}`);
+    const params: any[] = [projectId];
+    const where: string[] = [`project_id = $1`];
+    if (status) {
+      params.push(status);
+      where.push(`status = $${params.length}`);
+    }
+    if (q) {
+      params.push(`%${q}%`);
+      where.push(`(title ilike $${params.length} or coalesce(detail,'') ilike $${params.length})`);
+    }
+    const whereSql = `where ${where.join(" and ")}`;
+
+    const itemsSql = `
+      select id, title, status, decided_on, updated_at
+      from decisions
+      ${whereSql}
+      order by updated_at desc
+      limit ${limit} offset ${offset}
+    `;
+    const countSql = `select count(*)::int as total from decisions ${whereSql}`;
+
+    console.log("Running decisions queries...");
+    const [itemsRes, countRes] = await Promise.all([
+      query(itemsSql, params),
+      query<{ total: number }>(countSql, params),
+    ]);
+
+    console.log("Decisions queries completed. Items:", itemsRes.rows.length);
+
+    return okJSON({
+      items: itemsRes.rows,
+      page,
+      pageSize: limit,
+      total: countRes.rows[0]?.total ?? 0,
+    });
+  } catch (error) {
+    console.error("Decisions API error:", error);
+    return apiError(500, "Failed to fetch decisions", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
   }
-  if (q) {
-    params.push(`%${q}%`);
-    where.push(`(title ilike $${params.length} or coalesce(detail,'') ilike $${params.length})`);
-  }
-  const whereSql = `where ${where.join(" and ")}`;
-
-  const itemsSql = `
-    select id, title, status, decided_on, updated_at
-    from decisions
-    ${whereSql}
-    order by updated_at desc
-    limit ${limit} offset ${offset}
-  `;
-  const countSql = `select count(*)::int as total from decisions ${whereSql}`;
-
-  const [itemsRes, countRes] = await Promise.all([
-    query(itemsSql, params),
-    query<{ total: number }>(countSql, params),
-  ]);
-
-  return okJSON({
-    items: itemsRes.rows,
-    page,
-    pageSize: limit,
-    total: countRes.rows[0]?.total ?? 0,
-  });
 }
 
 export async function POST(req: Request) {
