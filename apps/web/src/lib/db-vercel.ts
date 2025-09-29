@@ -2,9 +2,13 @@
 // Using Vercel's PostgreSQL client which is more compatible with Next.js
 import { createClient } from '@vercel/postgres';
 
-// Ensure POSTGRES_URL is set from DATABASE_URL if not already set
+// Ensure all required environment variables are set
 if (!process.env.POSTGRES_URL && process.env.DATABASE_URL) {
   process.env.POSTGRES_URL = process.env.DATABASE_URL;
+}
+
+if (!process.env.POSTGRES_URL_NON_POOLING && process.env.DATABASE_URL) {
+  process.env.POSTGRES_URL_NON_POOLING = process.env.DATABASE_URL;
 }
 
 // Create a client instance for better connection management
