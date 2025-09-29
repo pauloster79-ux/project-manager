@@ -67,7 +67,7 @@ export function ChatDock({ projectId, scope }: { projectId: string; scope?: Scop
   return (
     <aside
       className={`border-l h-screen sticky top-0 transition-[width] duration-200 ease-out
-                  ${minimised ? "w-12" : "w-[420px]"} flex flex-col bg-background`}
+                  ${minimised ? "w-12" : "w-full"} flex flex-col bg-background`}
       aria-label="Chat"
     >
       {/* Header */}
