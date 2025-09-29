@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/catalyst/table";
 import { Badge } from "@/components/catalyst/badge";
+import { Button } from "@/components/catalyst/button";
 
 export default function DecisionsPage({ params }: { params: { projectId: string } }) {
   const { projectId } = params;
@@ -43,7 +44,36 @@ export default function DecisionsPage({ params }: { params: { projectId: string 
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Decisions</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold">Decisions</h1>
+        <Button
+          onClick={async () => {
+            try {
+              const response = await fetch("/api/decisions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  project_id: projectId,
+                  title: "New Decision",
+                  status: "Proposed",
+                  detail: "Decision details to be filled in"
+                })
+              });
+              
+              if (response.ok) {
+                const newDecision = await response.json();
+                window.location.href = `/projects/${projectId}/decisions/${newDecision.id}`;
+              } else {
+                alert("Failed to create decision");
+              }
+            } catch (error) {
+              alert("Error creating decision");
+            }
+          }}
+        >
+          Add New Decision
+        </Button>
+      </div>
       
       <Table bleed>
         <TableHead>

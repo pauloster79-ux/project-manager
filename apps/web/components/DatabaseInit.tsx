@@ -58,7 +58,6 @@ export function DatabaseInit() {
       <div className="space-y-2">
         <Button
           onClick={checkHealth}
-          size="sm"
           outline
           className="w-full"
         >
@@ -67,7 +66,6 @@ export function DatabaseInit() {
         <Button
           onClick={initializeDatabase}
           disabled={initializing}
-          size="sm"
           className="w-full"
         >
           {initializing ? "Initializing..." : "Initialize Database"}
