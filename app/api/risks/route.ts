@@ -66,7 +66,11 @@ export async function POST(req: Request) {
     "mitigation", "next_review_date", "validation_status", "validation_score",
     "issues", "ai_rewrite", "coherence_refs", "provenance", "llm_snapshot_id"
   ];
-  const vals = fields.map((k) => (k in body ? body[k] : null));
+  const vals = fields.map((k) => {
+    if (k === "validation_status") return "draft";
+    if (k === "validation_score") return 0;
+    return (k in body ? body[k] : null);
+  });
   const placeholders = fields.map((_, i) => `$${i + 1}`).join(",");
 
   const { rows } = await query(

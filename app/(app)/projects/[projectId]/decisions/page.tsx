@@ -124,35 +124,49 @@ export default function DecisionsTablePage() {
         </Select>
         <Button onClick={load} disabled={loading}>{loading ? "…" : "Apply"}</Button>
         <div className="flex-1" />
-        <Button onClick={async () => {
-          try {
-            const response = await fetch("/api/decisions", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                project_id: projectId,
-                title: "New Decision",
-                status: "Proposed",
-                detail: "Decision details to be filled in"
-              })
-            });
-            
-            if (response.ok) {
-              const newDecision = await response.json();
-              router.push(`/projects/${projectId}/decisions/${newDecision.id}`);
-            } else {
-              alert("Failed to create decision");
+        <button 
+          onClick={async () => {
+            try {
+              const response = await fetch("/api/decisions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  project_id: projectId,
+                  title: "New Decision",
+                  status: "Proposed",
+                  detail: "Decision details to be filled in"
+                })
+              });
+              
+              if (response.ok) {
+                const newDecision = await response.json();
+                router.push(`/projects/${projectId}/decisions/${newDecision.id}`);
+              } else {
+                alert("Failed to create decision");
+              }
+            } catch (error) {
+              alert("Error creating decision");
             }
-          } catch (error) {
-            alert("Error creating decision");
-          }
-        }}>New Decision</Button>
+          }}
+          style={{
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          New Decision
+        </button>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="bg-muted/50">
+      <div className="rounded-lg border border-gray-200 overflow-x-auto bg-white">
+        <table className="min-w-full text-sm divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
               <SortHeader label="Title" k="title" widthClass="w-[40%]" />
               <SortHeader label="Status" k="status" widthClass="w-[14%]" />
@@ -160,7 +174,7 @@ export default function DecisionsTablePage() {
               <SortHeader label="Updated" k="updated_at" widthClass="w-[18%]" />
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="bg-white divide-y divide-gray-200">
             {!paged.length && (
               <tr>
                 <td colSpan={4} className="px-3 py-8 text-center text-sm text-muted-foreground">
@@ -171,7 +185,7 @@ export default function DecisionsTablePage() {
             {paged.map((d) => (
               <tr
                 key={d.id}
-                className="hover:bg-muted/30 cursor-pointer"
+                  className="hover:bg-gray-50 cursor-pointer"
                 onClick={() => router.push(`/projects/${projectId}/decisions/${d.id}`)}
               >
                 <td className="px-3 py-2">

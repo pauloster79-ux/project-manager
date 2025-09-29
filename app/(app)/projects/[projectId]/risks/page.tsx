@@ -128,36 +128,50 @@ export default function RisksTablePage() {
         </Select>
         <Button onClick={load} disabled={loading}>{loading ? "…" : "Apply"}</Button>
         <div className="flex-1" />
-        <Button onClick={async () => {
-          try {
-            const response = await fetch("/api/risks", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                project_id: projectId,
-                title: "New Risk",
-                probability: 3,
-                impact: 3,
-                summary: "Risk description to be filled in"
-              })
-            });
-            
-            if (response.ok) {
-              const newRisk = await response.json();
-              router.push(`/projects/${projectId}/risks/${newRisk.id}`);
-            } else {
-              alert("Failed to create risk");
+        <button 
+          onClick={async () => {
+            try {
+              const response = await fetch("/api/risks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  project_id: projectId,
+                  title: "New Risk",
+                  probability: 3,
+                  impact: 3,
+                  summary: "Risk description to be filled in"
+                })
+              });
+              
+              if (response.ok) {
+                const newRisk = await response.json();
+                router.push(`/projects/${projectId}/risks/${newRisk.id}`);
+              } else {
+                alert("Failed to create risk");
+              }
+            } catch (error) {
+              alert("Error creating risk");
             }
-          } catch (error) {
-            alert("Error creating risk");
-          }
-        }}>New Risk</Button>
+          }}
+          style={{
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          New Risk
+        </button>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="bg-muted/50">
+      <div className="rounded-lg border border-gray-200 overflow-x-auto bg-white">
+        <table className="min-w-full text-sm divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
               <SortHeader label="Title" k="title" widthClass="w-[36%]" />
               <SortHeader label="Prob" k="probability" widthClass="w-[8%]" />
@@ -167,7 +181,7 @@ export default function RisksTablePage() {
               <SortHeader label="Updated" k="updated_at" widthClass="w-[20%]" />
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="bg-white divide-y divide-gray-200">
             {!paged.length && (
               <tr>
                 <td colSpan={6} className="px-3 py-8 text-center text-sm text-muted-foreground">
@@ -180,7 +194,7 @@ export default function RisksTablePage() {
               return (
                 <tr
                   key={r.id}
-                  className="hover:bg-muted/30 cursor-pointer"
+                  className="hover:bg-gray-50 cursor-pointer"
                   onClick={() => router.push(`/projects/${projectId}/risks/${r.id}`)}
                 >
                   <td className="px-3 py-2">
