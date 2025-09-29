@@ -10,6 +10,7 @@ export async function GET(req: Request) {
   if (!projectId) return apiError(400, "project_id is required");
 
   const q = (url.searchParams.get("q") || "").trim();
+  const minExposure = url.searchParams.get("min_exposure");
   const sort = (url.searchParams.get("sort") || "exposure").toLowerCase();
   const order = (url.searchParams.get("order") || "desc").toLowerCase() === "asc" ? "asc" : "desc";
   const page = Math.max(parseInt(url.searchParams.get("page") || "1", 10), 1);
@@ -22,11 +23,15 @@ export async function GET(req: Request) {
     params.push(`%${q}%`);
     where.push(`(title ilike $${params.length} or coalesce(summary,'') ilike $${params.length})`);
   }
+  if (minExposure && Number(minExposure) > 0) {
+    params.push(Number(minExposure));
+    where.push(`exposure >= $${params.length}`);
+  }
   const whereSql = `where ${where.join(" and ")}`;
   const sortCol = SORT_WHITELIST.has(sort) ? sort : "exposure";
 
   const itemsSql = `
-    select id, title, probability, impact, exposure, next_review_date, updated_at
+    select id, title, summary, probability, impact, owner_id, exposure, next_review_date, updated_at
     from risks
     ${whereSql}
     order by ${sortCol} ${order}

@@ -26,7 +26,7 @@ export async function GET(req: Request) {
   const whereSql = `where ${where.join(" and ")}`;
 
   const itemsSql = `
-    select id, title, status, decided_on, updated_at
+    select id, title, detail, status, decided_on, updated_at
     from decisions
     ${whereSql}
     order by updated_at desc
