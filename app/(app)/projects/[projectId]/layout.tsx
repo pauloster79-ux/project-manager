@@ -17,6 +17,7 @@ export default function ProjectLayout({
   const handleToggle = () => {
     console.log('Toggling sidebar, current state:', sidebarCollapsed);
     setSidebarCollapsed(!sidebarCollapsed);
+    alert(`Sidebar toggled! New state: ${!sidebarCollapsed ? 'collapsed' : 'expanded'}`);
   };
 
   return (
@@ -30,8 +31,8 @@ export default function ProjectLayout({
         <main className="flex-1 bg-white p-8">{children}</main>
 
         {/* Sidebar (hidden on mobile; shown on lg+) - positioned on the RIGHT */}
-        <aside className={`hidden lg:flex shrink-0 bg-zinc-100 transition-all duration-300 ease-in-out ${
-          sidebarCollapsed ? 'w-16' : 'w-80'
+        <aside className={`hidden lg:flex shrink-0 transition-all duration-300 ease-in-out ${
+          sidebarCollapsed ? 'w-16 bg-red-200' : 'w-80 bg-zinc-100'
         }`}>
           <div className="flex h-screen flex-col p-4 w-full">
             <AppSidebar 
