@@ -61,10 +61,10 @@ export function AppSidebar({ projectId }: { projectId: string }) {
         ))}
       </nav>
 
-            <div className="mt-auto space-y-4">
-              <DatabaseInit />
-              <div className="text-xs text-zinc-600">Europe/London</div>
-            </div>
-          </div>
-        );
-      }
+      <div className="mt-auto space-y-4">
+        <DatabaseInit />
+        <div className="text-xs text-zinc-600">Europe/London</div>
+      </div>
+    </div>
+  );
+}
