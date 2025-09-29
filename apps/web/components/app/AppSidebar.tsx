@@ -55,6 +55,10 @@ export function AppSidebar({ projectId }: { projectId: string }) {
         <OrgSwitcher />
       </div>
 
+      <div className="w-full">
+        <DatabaseInit />
+      </div>
+
       <div className="h-px w-full bg-zinc-300" />
 
       {/* Projects Section */}
