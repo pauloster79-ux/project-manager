@@ -67,20 +67,21 @@ export function ChatDock({ projectId, scope }: { projectId: string; scope?: Scop
   return (
     <aside
       className={`border-l h-screen sticky top-0 transition-[width] duration-200 ease-out
-                  ${minimised ? "w-12" : "w-full"} flex flex-col bg-background`}
-      aria-label="Chat"
+                  ${minimised ? "w-8" : "w-full"} flex flex-col bg-background`}
+      aria-label="Assistant"
     >
       {/* Header */}
-      <div className="h-12 border-b flex items-center gap-2 px-2">
+      <div className={`h-12 border-b flex items-center gap-2 ${minimised ? "justify-center px-1" : "px-2"}`}>
         <Button
           plain
           onClick={() => setMinimised((v) => !v)}
-          aria-label={minimised ? "Expand chat" : "Minimise chat"}
+          aria-label={minimised ? "Expand assistant" : "Minimise assistant"}
           title={minimised ? "Expand" : "Minimise"}
+          className={minimised ? "w-6 h-6 flex items-center justify-center" : ""}
         >
-          {minimised ? "⟨" : "⟩"}
+          {minimised ? "⟩" : "⟨"}
         </Button>
-        {!minimised && <div className="text-sm font-medium">Chat</div>}
+        {!minimised && <div className="text-sm font-medium">Assistant</div>}
       </div>
 
       {/* Body */}

@@ -80,7 +80,7 @@ export default function ProjectLayout({
         <main className="flex-1 bg-white p-8 min-w-0">{children}</main>
 
         {/* Resizable divider */}
-        <div className="hidden md:block w-2 bg-zinc-200 hover:bg-zinc-300 cursor-col-resize transition-colors relative">
+        <div className="hidden md:block w-px bg-zinc-200 hover:bg-zinc-300 cursor-col-resize transition-colors relative">
           <div
             className={`absolute inset-0 w-full h-full ${
               isResizing ? "bg-blue-400" : ""
