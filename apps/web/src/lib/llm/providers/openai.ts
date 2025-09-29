@@ -5,13 +5,16 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 const OPENAI_EMBEDDING_MODEL = process.env.OPENAI_EMBEDDING_MODEL || "text-embedding-3-small";
 
-if (!OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY environment variable is required");
+function checkApiKey() {
+  if (!OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY environment variable is required");
+  }
 }
 
 export const openaiProvider: LLMProvider = {
   id: "openai",
   async complete(args: CompleteArgs): Promise<string> {
+    checkApiKey();
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -39,6 +42,7 @@ export const openaiProvider: LLMProvider = {
     return data.choices[0]?.message?.content || "";
   },
   async embed(texts: string[]): Promise<number[][]> {
+    checkApiKey();
     const response = await fetch("https://api.openai.com/v1/embeddings", {
       method: "POST",
       headers: {

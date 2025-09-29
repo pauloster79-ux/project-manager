@@ -128,7 +128,30 @@ export default function RisksTablePage() {
         </Select>
         <Button onClick={load} disabled={loading}>{loading ? "…" : "Apply"}</Button>
         <div className="flex-1" />
-        <Button onClick={() => router.push(`/projects/${projectId}/risks/new`)}>New Risk</Button>
+        <Button onClick={async () => {
+          try {
+            const response = await fetch("/api/risks", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                project_id: projectId,
+                title: "New Risk",
+                probability: 3,
+                impact: 3,
+                summary: "Risk description to be filled in"
+              })
+            });
+            
+            if (response.ok) {
+              const newRisk = await response.json();
+              router.push(`/projects/${projectId}/risks/${newRisk.id}`);
+            } else {
+              alert("Failed to create risk");
+            }
+          } catch (error) {
+            alert("Error creating risk");
+          }
+        }}>New Risk</Button>
       </div>
 
       {/* Table */}

@@ -124,7 +124,29 @@ export default function DecisionsTablePage() {
         </Select>
         <Button onClick={load} disabled={loading}>{loading ? "…" : "Apply"}</Button>
         <div className="flex-1" />
-        <Button onClick={() => router.push(`/projects/${projectId}/decisions/new`)}>New Decision</Button>
+        <Button onClick={async () => {
+          try {
+            const response = await fetch("/api/decisions", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                project_id: projectId,
+                title: "New Decision",
+                status: "Proposed",
+                detail: "Decision details to be filled in"
+              })
+            });
+            
+            if (response.ok) {
+              const newDecision = await response.json();
+              router.push(`/projects/${projectId}/decisions/${newDecision.id}`);
+            } else {
+              alert("Failed to create decision");
+            }
+          } catch (error) {
+            alert("Error creating decision");
+          }
+        }}>New Decision</Button>
       </div>
 
       {/* Table */}
