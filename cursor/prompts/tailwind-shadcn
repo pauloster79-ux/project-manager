@@ -1,0 +1,42 @@
+---
+description: React conventions (functional components, hooks, a11y, forms)
+globs: "**/*.{tsx,jsx}"
+---
+
+## React Rules
+
+- Functional components only — no class components.
+- Type props explicitly.
+- `"use client"` at the top of client components.
+- Avoid unnecessary `useEffect`. Prefer loading data on the server.
+- Semantic HTML with proper accessibility (labels, keyboard focus).
+
+### Form Handling: react-hook-form + Zod + shadcn/ui
+```tsx
+"use client";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const Schema = z.object({ title: z.string().min(1) });
+type FormValues = z.infer<typeof Schema>;
+
+export function MyForm({ onSubmit }: { onSubmit: (v: FormValues) => void }) {
+  const { register, handleSubmit, formState: { errors, isSubmitting } } =
+    useForm<FormValues>({ resolver: zodResolver(Schema) });
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("title")} />
+      {errors.title && <p>{errors.title.message}</p>}
+      <button disabled={isSubmitting}>Submit</button>
+    </form>
+  );
+}
+```
+
+### Component Structure
+
+- Keep components focused and small.
+- Extract reusable UI elements.
+- Export named components.

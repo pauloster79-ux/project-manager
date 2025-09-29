@@ -35,21 +35,43 @@ export function AppSidebar({ projectId, collapsed, onToggle }: AppSidebarProps) 
             AI PM Hub
           </Link>
         )}
-        <button
-          onClick={onToggle}
-          className="ml-auto p-1 hover:bg-zinc-200 rounded transition-colors"
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          <svg 
-            className={`h-4 w-4 text-zinc-600 transition-transform ${collapsed ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
+        {!collapsed && (
+          <button
+            onClick={onToggle}
+            className="ml-auto p-1 hover:bg-zinc-200 rounded transition-colors"
+            title="Collapse sidebar"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
+            <svg 
+              className="h-4 w-4 text-zinc-600" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
       </div>
+
+      {/* Toggle button when collapsed */}
+      {collapsed && (
+        <div className="flex justify-center w-full">
+          <button
+            onClick={onToggle}
+            className="p-2 hover:bg-zinc-200 rounded transition-colors"
+            title="Expand sidebar"
+          >
+            <svg 
+              className="h-4 w-4 text-zinc-600 rotate-180" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Project Selector - hide when collapsed */}
       {!collapsed && (

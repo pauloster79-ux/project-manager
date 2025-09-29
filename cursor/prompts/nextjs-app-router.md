@@ -15,9 +15,7 @@ globs: "**/*.{ts,tsx,js,jsx}"
   - Route handlers only if needed: `app/api/{resource}/route.ts`
 - Use `cache`, `revalidate`, `fetch({ cache, next: { revalidate } })` deliberately. Default is **RSC with SSR**.
 
-### Patterns
-
-- **Server Action**
+### Server Action
 ```ts
 "use server";
 import { z } from "zod";
@@ -30,3 +28,31 @@ export async function updateItem(raw: unknown) {
   await pg`update items set name=${input.name} where id=${input.id}`;
   return { ok: true };
 }
+```
+
+### Client form using action
+```tsx
+"use client";
+import { useTransition } from "react";
+import { updateItem } from "./actions";
+
+export function EditForm({ id, name }: { id: string; name: string }) {
+  const [pending, start] = useTransition();
+  return (
+    <form action={(formData) => start(() => updateItem(Object.fromEntries(formData)))}>
+      <input name="id" defaultValue={id} hidden />
+      <input name="name" defaultValue={name} />
+      <button disabled={pending}>{pending ? "Saving..." : "Save"}</button>
+    </form>
+  );
+}
+```
+
+### Do / Don’t
+
+- ✅ Prefer RSC + Server Actions + Zod
+- ✅ Colocate UI/state near components
+- ✅ Use `metadata` export for SEO
+- ❌ Don’t import server-only modules into Client Components
+- ❌ Don’t use `pages/` directory
+- ❌ Avoid ad‑hoc fetch chains in clients when data can be loaded on the server

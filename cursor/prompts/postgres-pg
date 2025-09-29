@@ -1,0 +1,29 @@
+---
+description: Postgres access via node-postgres (pg) with safe patterns
+globs: "**/*.{ts,tsx}"
+---
+
+## Postgres Access via `pg`
+
+- Use parameterized queries to avoid SQL injection.
+- Validate all inputs with Zod.
+
+### Safe Query with Zod
+```ts
+import { z } from "zod";
+import { pg } from "@/lib/db";
+
+const Input = z.object({ id: z.string().uuid() });
+
+export async function getItem(input: unknown) {
+  const { id } = Input.parse(input);
+  const [row] = await pg`select * from items where id = ${id}`;
+  return row;
+}
+```
+
+### Pool setup
+```ts
+import postgres from "postgres";
+export const pg = postgres(process.env.DATABASE_URL!, { max: 10, prepare: true });
+```
