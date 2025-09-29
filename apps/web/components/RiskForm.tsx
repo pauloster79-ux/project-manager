@@ -5,7 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { RiskSchema } from "@/src/schemas";
+import { useRouter } from "next/navigation";
+import { RiskSchema, RiskApiResponse } from "@/src/schemas";
 import { validateRisk, ValidationResponse } from "@/lib/validationClient";
 import { applyRiskPatch } from "@/lib/applyPatch";
 import { Label } from "@/components/catalyst/label";
@@ -45,8 +46,9 @@ export function RiskForm({
   risk,
 }: {
   projectId: string;
-  risk: any; // fetched row from /api/risks/[id]
+  risk: RiskApiResponse; // fetched row from /api/risks/[id]
 }) {
+  const router = useRouter();
   const [validation, setValidation] = useState<ValidationResponse | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -68,7 +70,7 @@ export function RiskForm({
     mode: "onChange",
   });
 
-  const baseRef = useRef<any>(risk); // last loaded/saved snapshot
+  const baseRef = useRef<RiskApiResponse>(risk); // last loaded/saved snapshot
 
   // Debounced on-blur validate for a single-field diff
   async function validateField(field: keyof RiskFormValues) {
@@ -262,7 +264,7 @@ export function RiskForm({
                   
                   if (response.ok) {
                     alert("Risk saved successfully!");
-                    window.location.reload();
+                    router.refresh();
                   } else {
                     const error = await response.json();
                     alert(`Failed to save: ${error.message || "Unknown error"}`);
@@ -298,7 +300,7 @@ export function RiskForm({
             
             if (response.ok) {
               alert("Risk updated successfully!");
-              window.location.reload();
+              router.refresh();
             } else {
               const error = await response.json();
               alert(`Failed to update: ${error.message || "Unknown error"}`);

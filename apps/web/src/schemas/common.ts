@@ -14,3 +14,25 @@ export const ISO_DATETIME = z
   );
 
 export const ValidationStatus = z.enum(["valid", "draft", "blocked"]);
+
+// API Request Schemas
+export const CreateProjectSchema = z.object({
+  name: z.string().min(1, "Project name is required").max(255, "Project name too long"),
+  description: z.string().max(1000, "Description too long").optional(),
+});
+
+export const PatchRiskSchema = z.object({
+  project_id: UUID,
+  patch: z.record(z.any()).optional(),
+  if_match_updated_at: z.string().optional(),
+  llm_snapshot_id: z.string().optional(),
+  issues: z.array(z.any()).optional(),
+});
+
+export const PatchDecisionSchema = z.object({
+  project_id: UUID,
+  patch: z.record(z.any()).optional(),
+  if_match_updated_at: z.string().optional(),
+  llm_snapshot_id: z.string().optional(),
+  issues: z.array(z.any()).optional(),
+});

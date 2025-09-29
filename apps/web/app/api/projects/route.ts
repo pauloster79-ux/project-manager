@@ -3,18 +3,14 @@ import { query } from "@/src/lib/db";
 import { okJSON, apiError } from "@/src/lib/errors";
 import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
 import { requireAccess } from "@/src/lib/authz";
+import { CreateProjectSchema } from "@/src/schemas/common";
 
 export async function GET(req: Request) {
   try {
-    console.log("Projects API called");
-    
-    // Temporarily bypass authorization to test
     const user = await getCurrentUser();
     const orgId = await getCurrentOrgId();
-    console.log("User:", user.id, "Org:", orgId);
     
-    // Skip requireAccess for now
-    // await requireAccess({ userId: user.id, orgId, need: "org:read" });
+    await requireAccess({ userId: user.id, orgId, need: "org:read" });
 
     const url = new URL(req.url);
     const q = (url.searchParams.get("q") || "").trim();
@@ -22,7 +18,6 @@ export async function GET(req: Request) {
     const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "20", 10), 1), 50);
     const offset = (page - 1) * limit;
 
-    // Use orgId but don't enforce it strictly for now
     const params: any[] = [orgId];
     const where: string[] = ["p.org_id = $1"];
     if (q) {
@@ -40,13 +35,10 @@ export async function GET(req: Request) {
     `;
     const countSql = `select count(*)::int as total from projects p ${whereSql}`;
 
-    console.log("Running queries...");
     const [itemsRes, countRes] = await Promise.all([
       query(itemsSql, params),
       query<{ total: number }>(countSql, params),
     ]);
-
-    console.log("Queries completed. Items:", itemsRes.rows.length);
 
     return okJSON({
       items: itemsRes.rows,
@@ -64,13 +56,23 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const user = await getCurrentUser();
-  const orgId = await getCurrentOrgId();
-  const { name, description } = await req.json().catch(() => ({}));
-  if (!name || typeof name !== "string") return apiError(400, "name is required");
-  const { rows } = await query(
-    `insert into projects (name, description, org_id) values ($1,$2,$3) returning *`,
-    [name.trim(), description ?? null, orgId]
-  );
-  return okJSON(rows[0]);
+  try {
+    const user = await getCurrentUser();
+    const orgId = await getCurrentOrgId();
+    
+    const rawBody = await req.json().catch(() => ({}));
+    const validatedData = CreateProjectSchema.parse(rawBody);
+    
+    const { rows } = await query(
+      `insert into projects (name, description, org_id) values ($1,$2,$3) returning *`,
+      [validatedData.name.trim(), validatedData.description ?? null, orgId]
+    );
+    return okJSON(rows[0]);
+  } catch (error) {
+    if (error instanceof Error && error.name === 'ZodError') {
+      return apiError(400, "Invalid request data", { details: error.message });
+    }
+    console.error("Projects POST error:", error);
+    return apiError(500, "Failed to create project");
+  }
 }

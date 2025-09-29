@@ -17,10 +17,10 @@ export default function LoginPage() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Auto-logged in as:", data);
+          console.log("Auto-logged in as super user:", data);
           router.push("/projects");
         } else {
-          console.error("Auto-login failed");
+          console.error("Auto-login failed:", await response.text());
           // Fallback to manual login
           setLoading(false);
         }
@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Auto-logging you in...</p>
+          <p className="mt-4 text-gray-600">Auto-logging you in as super user...</p>
         </div>
       </div>
     );

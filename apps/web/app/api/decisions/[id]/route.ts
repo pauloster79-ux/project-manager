@@ -4,6 +4,7 @@ import { okJSON, apiError } from "@/src/lib/errors";
 import { buildPatchSQL } from "@/src/domain/patch";
 import { writeAudit } from "@/src/domain/audit";
 import { enqueue } from "@/src/lib/queue";
+import { PatchDecisionSchema } from "@/src/schemas/common";
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   const id = params.id;
@@ -13,15 +14,16 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
-  const body = await req.json().catch(() => null);
-  if (!body) return apiError(400, "Invalid JSON");
-  const project_id = body.project_id || body.patch?.project_id;
-  if (!project_id) return apiError(400, "project_id is required");
-
-  const patch: Record<string, any> = body.patch || {};
-  const ifMatch: string | undefined = body.if_match_updated_at || undefined;
-  const llm_snapshot_id: string | undefined = body.llm_snapshot_id;
+  try {
+    const id = params.id;
+    const rawBody = await req.json().catch(() => null);
+    if (!rawBody) return apiError(400, "Invalid JSON");
+    
+    const validatedData = PatchDecisionSchema.parse(rawBody);
+    const project_id = validatedData.project_id;
+    const patch: Record<string, any> = validatedData.patch || {};
+    const ifMatch: string | undefined = validatedData.if_match_updated_at;
+    const llm_snapshot_id: string | undefined = validatedData.llm_snapshot_id;
 
   const beforeRes = await query(`select * from decisions where id = $1 and project_id = $2`, [id, project_id]);
   const before = beforeRes.rows[0];
@@ -48,11 +50,18 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     action: "update",
     before,
     after,
-    issues: body.issues ?? null,
+    issues: validatedData.issues ?? null,
     llm_snapshot_id: llm_snapshot_id ?? null,
   });
 
   await enqueue("embed:entity", { project_id, entity_type: "decision", entity_id: id });
 
   return okJSON(after);
+  } catch (error) {
+    if (error instanceof Error && error.name === 'ZodError') {
+      return apiError(400, "Invalid request data", { details: error.message });
+    }
+    console.error("Decision PATCH error:", error);
+    return apiError(500, "Failed to update decision");
+  }
 }

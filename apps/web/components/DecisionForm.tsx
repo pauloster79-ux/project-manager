@@ -5,7 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DecisionSchema, DecisionStatus } from "@/src/schemas";
+import { useRouter } from "next/navigation";
+import { DecisionSchema, DecisionStatus, DecisionApiResponse } from "@/src/schemas";
 import { validateDecision, DecisionValidationResponse } from "@/lib/validationClient";
 import { applyDecisionPatch } from "@/lib/applyPatch";
 
@@ -43,12 +44,13 @@ export function DecisionForm({
   decision,
 }: {
   projectId: string;
-  decision: any; // row from /api/decisions/[id]
+  decision: DecisionApiResponse; // row from /api/decisions/[id]
 }) {
+  const router = useRouter();
   const [validation, setValidation] = useState<DecisionValidationResponse | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
-  const baseRef = useRef<any>(decision);
+  const baseRef = useRef<DecisionApiResponse>(decision);
 
   const form = useForm<DecisionFormValues>({
     resolver: zodResolver(DecisionFormSchema),
@@ -205,7 +207,7 @@ export function DecisionForm({
                   
                   if (response.ok) {
                     alert("Decision saved successfully!");
-                    window.location.reload();
+                    router.refresh();
                   } else {
                     const error = await response.json();
                     alert(`Failed to save: ${error.message || "Unknown error"}`);
@@ -241,7 +243,7 @@ export function DecisionForm({
             
             if (response.ok) {
               alert("Decision updated successfully!");
-              window.location.reload();
+              router.refresh();
             } else {
               const error = await response.json();
               alert(`Failed to update: ${error.message || "Unknown error"}`);

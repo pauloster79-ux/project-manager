@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/catalyst/table";
 import { Badge } from "@/components/catalyst/badge";
 import { Button } from "@/components/catalyst/button";
 
 export default function RisksPage({ params }: { params: { projectId: string } }) {
   const { projectId } = params;
+  const router = useRouter();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +78,6 @@ export default function RisksPage({ params }: { params: { projectId: string } })
         <Button
           color="blue"
           onClick={async () => {
-            console.log("Add New Risk button clicked");
             try {
               const response = await fetch("/api/risks", {
                 method: "POST",
@@ -92,7 +93,7 @@ export default function RisksPage({ params }: { params: { projectId: string } })
               
               if (response.ok) {
                 const newRisk = await response.json();
-                window.location.href = `/projects/${projectId}/risks/${newRisk.id}`;
+                router.push(`/projects/${projectId}/risks/${newRisk.id}`);
               } else {
                 alert("Failed to create risk");
               }

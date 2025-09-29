@@ -1,13 +1,15 @@
 // src/domain/patch.ts
 type Column = string;
 
-export function buildPatchSQL(opts: {
+interface PatchOptions {
   table: "risks" | "decisions";
   id: string;
   project_id: string;
-  patch: Record<string, any>;
+  patch: Record<string, unknown>;
   ifMatchUpdatedAt?: string;
-}) {
+}
+
+export function buildPatchSQL(opts: PatchOptions) {
   const { table, id, project_id, patch, ifMatchUpdatedAt } = opts;
 
   const allowed: Record<typeof table, Column[]> = {
@@ -24,7 +26,7 @@ export function buildPatchSQL(opts: {
   };
 
   const setCols: string[] = [];
-  const values: any[] = [];
+  const values: unknown[] = [];
   let idx = 1;
 
   for (const [k, v] of Object.entries(patch)) {
@@ -35,7 +37,7 @@ export function buildPatchSQL(opts: {
 
   // nothing to update
   if (setCols.length === 0) {
-    return { sql: null as string | null, params: [] as any[] };
+    return { sql: null as string | null, params: [] as unknown[] };
   }
 
   setCols.push(`updated_at = now()`);

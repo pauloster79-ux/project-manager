@@ -24,3 +24,24 @@ export const RiskSchema = z.object({
 });
 
 export type Risk = z.infer<typeof RiskSchema>;
+
+// API Response Types
+export interface RiskApiResponse extends Risk {
+  id: string;
+  project_id: string;
+  title: string;
+  summary?: string;
+  owner_id?: string;
+  probability: number;
+  impact: number;
+  mitigation?: string;
+  next_review_date?: string;
+  validation_status: "valid" | "draft" | "blocked";
+  validation_score?: number;
+  issues?: any[];
+  ai_rewrite?: string;
+  coherence_refs?: any;
+  provenance?: any;
+  llm_snapshot_id?: string;
+  updated_at: string;
+}

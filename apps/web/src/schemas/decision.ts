@@ -22,3 +22,22 @@ export const DecisionSchema = z.object({
 });
 
 export type Decision = z.infer<typeof DecisionSchema>;
+
+// API Response Types
+export interface DecisionApiResponse extends Decision {
+  id: string;
+  project_id: string;
+  title: string;
+  detail?: string;
+  decided_by?: string;
+  decided_on?: string;
+  status: "Proposed" | "Approved" | "Rejected";
+  validation_status: "valid" | "draft" | "blocked";
+  validation_score?: number;
+  issues?: any[];
+  ai_rewrite?: string;
+  coherence_refs?: any;
+  provenance?: any;
+  llm_snapshot_id?: string;
+  updated_at: string;
+}

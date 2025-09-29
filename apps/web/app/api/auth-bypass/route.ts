@@ -1,23 +1,40 @@
-// Temporary auth bypass for testing - automatically logs in users
-import { okJSON } from "@/src/lib/errors";
+// Auto-authentication that logs in as the real super user
+import { okJSON, apiError } from "@/src/lib/errors";
+import { query } from "@/src/lib/db";
 import { cookies } from "next/headers";
 
 export async function GET() {
-  // Set a session cookie for automatic authentication
-  const cookieStore = cookies();
-  cookieStore.set("user_id", "auto-user-id", { 
-    httpOnly: true, 
-    sameSite: "lax", 
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30 // 30 days
-  });
+  try {
+    // Find the real super user in the database
+    const { rows } = await query(
+      `SELECT id, email, display_name FROM users WHERE email = $1 LIMIT 1`,
+      ["admin@example.com"]
+    );
 
-  // Return a mock user with full permissions
-  return okJSON({
-    id: "auto-user-id",
-    email: "admin@example.com",
-    display_name: "Auto User",
-    org_id: "auto-org-id",
-    role: "owner"
-  });
+    if (!rows[0]) {
+      return apiError(404, "Super user not found in database");
+    }
+
+    const user = rows[0];
+
+    // Set a session cookie with the real user ID
+    const cookieStore = cookies();
+    cookieStore.set("user_id", user.id, { 
+      httpOnly: true, 
+      sameSite: "lax", 
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30 // 30 days
+    });
+
+    // Return the real user data
+    return okJSON({
+      id: user.id,
+      email: user.email,
+      display_name: user.display_name,
+      message: "Auto-logged in as super user"
+    });
+  } catch (error) {
+    console.error("Auto-login error:", error);
+    return apiError(500, "Failed to auto-login");
+  }
 }
