@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // App Router is enabled by default in Next.js 13+
+  experimental: {
+    webpackBuildWorker: true,
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Don't bundle server-only modules for the client
@@ -20,14 +23,19 @@ const nextConfig = {
         path: false,
       };
       
-      // Exclude pg and related modules from client bundle
-      config.externals = config.externals || [];
-      config.externals.push({
-        'pg': 'commonjs pg',
-        'pg-native': 'commonjs pg-native',
-        'pg-pool': 'commonjs pg-pool',
-        'pg-boss': 'commonjs pg-boss',
-      });
+      // Exclude all pg-related modules from client bundle
+      config.externals = [
+        ...(config.externals || []),
+        'pg',
+        'pg-native',
+        'pg-pool',
+        'pg-boss',
+        'pg-connection-string',
+        'pg-protocol',
+        'pg-types',
+        'pgpass',
+        'pg-int8',
+      ];
     }
     return config;
   },

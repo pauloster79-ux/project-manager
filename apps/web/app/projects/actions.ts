@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { query } from "@/src/lib/db";
 import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
 import { requireAccess } from "@/src/lib/authz";
 import { CreateProjectSchema } from "@/src/schemas/common";
@@ -21,6 +20,8 @@ export async function createProject(formData: FormData) {
 
     const validatedData = CreateProjectSchema.parse(rawData);
 
+    // Dynamic import to prevent bundling
+    const { query } = await import("@/src/lib/db");
     const { rows } = await query(
       `insert into projects (name, description, org_id) values ($1,$2,$3) returning *`,
       [validatedData.name.trim(), validatedData.description ?? null, orgId]

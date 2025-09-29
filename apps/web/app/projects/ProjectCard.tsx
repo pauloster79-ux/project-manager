@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/card";
-import { Project } from "./lib";
+import { Project } from "./types";
 
 interface ProjectCardProps {
   project: Project;

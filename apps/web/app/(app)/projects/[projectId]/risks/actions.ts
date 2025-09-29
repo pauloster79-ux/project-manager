@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { query } from "@/src/lib/db";
 import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
 import { requireAccess } from "@/src/lib/authz";
 
@@ -13,6 +12,8 @@ export async function createRisk(projectId: string) {
     
     await requireAccess({ userId: user.id, orgId, need: "org:read" });
 
+    // Dynamic import to prevent bundling
+    const { query } = await import("@/src/lib/db");
     const { rows } = await query(
       `insert into risks (project_id, title, probability, impact, summary) 
        values ($1, $2, $3, $4, $5) 

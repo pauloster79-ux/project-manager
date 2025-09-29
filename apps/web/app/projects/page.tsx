@@ -1,10 +1,32 @@
-import { getProjects } from "./lib";
 import { ProjectActions } from "./ProjectActions";
 import { ProjectCard } from "./ProjectCard";
 import { EmptyState } from "./EmptyState";
+import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
+import { requireAccess } from "@/src/lib/authz";
 
 export default async function ProjectsPage() {
-  const { projects, error } = await getProjects();
+  // Fetch data directly in the server component to avoid import chain issues
+  let projects: any[] = [];
+  let error: string | undefined;
+  
+  try {
+    const user = await getCurrentUser();
+    const orgId = await getCurrentOrgId();
+    
+    await requireAccess({ userId: user.id, orgId, need: "org:read" });
+
+    // Dynamic import to prevent bundling
+    const { query } = await import("@/src/lib/db");
+    const { rows } = await query(
+      `select id, name, description, updated_at from projects where org_id = $1 order by updated_at desc`,
+      [orgId]
+    );
+    
+    projects = rows;
+  } catch (err) {
+    console.error("Error fetching projects:", err);
+    error = err instanceof Error ? err.message : "Failed to load projects";
+  }
 
   if (error) {
     return (

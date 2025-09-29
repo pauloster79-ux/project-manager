@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/catalyst/table";
 import { Badge } from "@/components/catalyst/badge";
-import { RiskListItem } from "./lib";
+import { RiskListItem } from "./types";
 
 interface RiskTableProps {
   risks: RiskListItem[];
@@ -60,7 +60,7 @@ export function RiskTable({ risks, projectId }: RiskTableProps) {
             </TableCell>
             <TableCell>{risk.probability}</TableCell>
             <TableCell>{risk.impact}</TableCell>
-            <TableCell>{formatDate(risk.next_review_date)}</TableCell>
+            <TableCell>{formatDate(risk.next_review_date || null)}</TableCell>
             <TableCell className="text-muted-foreground">
               {new Date(risk.updated_at).toLocaleDateString()}
             </TableCell>
