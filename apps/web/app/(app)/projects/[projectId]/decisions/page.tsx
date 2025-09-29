@@ -47,7 +47,9 @@ export default function DecisionsPage({ params }: { params: { projectId: string 
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Decisions</h1>
         <Button
+          color="blue"
           onClick={async () => {
+            console.log("Add New Decision button clicked");
             try {
               const response = await fetch("/api/decisions", {
                 method: "POST",

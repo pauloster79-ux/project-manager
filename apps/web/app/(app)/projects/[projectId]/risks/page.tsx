@@ -74,7 +74,9 @@ export default function RisksPage({ params }: { params: { projectId: string } })
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Risks</h1>
         <Button
+          color="blue"
           onClick={async () => {
+            console.log("Add New Risk button clicked");
             try {
               const response = await fetch("/api/risks", {
                 method: "POST",
