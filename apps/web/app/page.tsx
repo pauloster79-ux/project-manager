@@ -29,9 +29,23 @@ export default async function HomePage() {
         console.log(`Auto-authenticated as super user: ${user.email} (${user.id})`);
       } else {
         console.error("Super user not found in database");
+        // Set a fallback user ID if database is not initialized
+        cookieStore.set("user_id", "fallback-user", { 
+          httpOnly: true, 
+          sameSite: "lax", 
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30 // 30 days
+        });
       }
     } catch (error) {
       console.error("Auto-authentication failed:", error);
+      // Set a fallback user ID if database connection fails
+      cookieStore.set("user_id", "fallback-user", { 
+        httpOnly: true, 
+        sameSite: "lax", 
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30 // 30 days
+      });
     }
   }
   
