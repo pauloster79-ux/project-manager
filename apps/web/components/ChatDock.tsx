@@ -55,10 +55,19 @@ export function ChatDock({ projectId, scope }: { projectId: string; scope?: Scop
           scope: effectiveScope.current || scope || { type: "project" },
         }),
       });
+      
+      if (!res.ok) {
+        throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
+      }
+      
       const j = await res.json();
       setMsgs((m) => [...m, { role: "assistant", text: j.answer || "No answer.", citations: j.citations || [] }]);
-    } catch {
-      setMsgs((m) => [...m, { role: "assistant", text: "Sorry—couldn't answer right now." }]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      setMsgs((m) => [...m, { 
+        role: "assistant", 
+        text: "I'm having trouble connecting to the server. Please check your connection and try again." 
+      }]);
     } finally {
       setBusy(false);
     }
