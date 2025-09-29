@@ -42,7 +42,7 @@ export default function LoginPage() {
             Sign in to AI PM Hub
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Use the super user account we created (v2)
+            Use the super user account we created (v3)
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
