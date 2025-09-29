@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/catalyst/
 import { Button } from "@/components/catalyst/button";
 import { Input } from "@/components/catalyst/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/catalyst/select-form";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/catalyst/table";
 
 type Att = {
   id: string;
@@ -87,21 +88,55 @@ export default function DocumentsPage({ params }: { params: { projectId: string 
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader><CardTitle>Documents</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          {!items.length && <div className="text-sm text-muted-foreground">No documents yet.</div>}
-          {items.map(it => (
-            <div key={it.id} className="flex items-center justify-between border rounded-lg p-3">
-              <div className="text-sm">
-                <div className="font-medium">{it.filename}</div>
-                <div className="text-muted-foreground">Linked to {it.entity_type}:{it.entity_id.slice(0,8)} • {it.mime_type}</div>
-              </div>
-              <div className="text-xs">{it.text_extract_status}</div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Documents</h2>
+          <Button color="blue">New Document</Button>
+        </div>
+        
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeader>Name</TableHeader>
+              <TableHeader>Type</TableHeader>
+              <TableHeader>Linked To</TableHeader>
+              <TableHeader>Status</TableHeader>
+              <TableHeader>Uploaded</TableHeader>
+              <TableHeader>Size</TableHeader>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {items.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                  No documents yet.
+                </TableCell>
+              </TableRow>
+            ) : (
+              items.map((it) => (
+                <TableRow key={it.id}>
+                  <TableCell className="font-medium">{it.filename}</TableCell>
+                  <TableCell>{it.mime_type}</TableCell>
+                  <TableCell>
+                    {it.entity_type}: {it.entity_id.slice(0, 8)}...
+                  </TableCell>
+                  <TableCell>
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      it.text_extract_status === 'completed' ? 'bg-green-100 text-green-800' :
+                      it.text_extract_status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {it.text_extract_status}
+                    </span>
+                  </TableCell>
+                  <TableCell>{new Date(it.uploaded_at).toLocaleDateString()}</TableCell>
+                  <TableCell>{it.size_bytes ? `${Math.round(it.size_bytes / 1024)} KB` : '—'}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
