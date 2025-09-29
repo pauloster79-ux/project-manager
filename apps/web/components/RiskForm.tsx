@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/card";
 import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
+import { IssuesPanel } from "./IssuesPanel";
 import { prefillChat } from "@/lib/chatBridge";
 
 // Create a form-specific schema with required fields
@@ -47,6 +48,7 @@ export function RiskForm({
   risk: any; // fetched row from /api/risks/[id]
 }) {
   const [validation, setValidation] = useState<ValidationResponse | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const form = useForm<RiskFormValues>({
@@ -235,6 +237,15 @@ export function RiskForm({
             >
               Explain this risk
             </Button>
+            {validation && (validation.issues?.length > 0 || validation.proposed_patch) && (
+              <Button
+                type="button"
+                outline
+                onClick={() => setPanelOpen(true)}
+              >
+                View Issues ({validation.issues?.length || 0})
+              </Button>
+            )}
             <Button
               type="button"
               onClick={async () => {
@@ -267,6 +278,39 @@ export function RiskForm({
         </CardContent>
       </Card>
 
+      <IssuesPanel
+        open={panelOpen}
+        onOpenChange={setPanelOpen}
+        issues={validation?.issues ?? []}
+        proposedPatch={validation?.proposed_patch ?? null}
+        rationale={validation?.rationale ?? null}
+        disabledApply={false}
+        onApply={async (patch) => {
+          try {
+            const response = await fetch(`/api/risks/${risk.id}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...patch,
+                if_match_updated_at: risk.updated_at
+              })
+            });
+            
+            if (response.ok) {
+              alert("Risk updated successfully!");
+              window.location.reload();
+            } else {
+              const error = await response.json();
+              alert(`Failed to update: ${error.message || "Unknown error"}`);
+            }
+          } catch (error) {
+            alert(`Error updating risk: ${error instanceof Error ? error.message : "Unknown error"}`);
+          }
+        }}
+        projectId={projectId}
+        entityType="risk"
+        entityId={risk.id}
+      />
     </>
   );
 }

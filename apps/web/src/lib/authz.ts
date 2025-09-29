@@ -1,5 +1,6 @@
 // src/lib/authz.ts
 import { query } from "@/src/lib/db";
+import { apiError } from "@/src/lib/errors";
 
 type OrgRole = "viewer" | "member" | "admin" | "owner";
 type ProjectRole = "viewer" | "member" | "pm";
@@ -62,6 +63,5 @@ function rankProj(r: ProjectRole) {
 }
 
 function forbidden(message = "Forbidden") {
-  const { apiError } = require("@/src/lib/errors");
-  return apiError(403, message);
+  throw apiError(403, message);
 }

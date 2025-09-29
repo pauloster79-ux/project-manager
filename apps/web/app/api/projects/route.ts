@@ -5,44 +5,51 @@ import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
 import { requireAccess } from "@/src/lib/authz";
 
 export async function GET(req: Request) {
-  const user = await getCurrentUser();
-  const orgId = await getCurrentOrgId();
-  await requireAccess({ userId: user.id, orgId, need: "org:read" });
+  try {
+    const user = await getCurrentUser();
+    const orgId = await getCurrentOrgId();
+    await requireAccess({ userId: user.id, orgId, need: "org:read" });
 
-  const url = new URL(req.url);
-  const q = (url.searchParams.get("q") || "").trim();
-  const page = Math.max(parseInt(url.searchParams.get("page") || "1", 10), 1);
-  const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "20", 10), 1), 50);
-  const offset = (page - 1) * limit;
+    const url = new URL(req.url);
+    const q = (url.searchParams.get("q") || "").trim();
+    const page = Math.max(parseInt(url.searchParams.get("page") || "1", 10), 1);
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "20", 10), 1), 50);
+    const offset = (page - 1) * limit;
 
-  const params: any[] = [orgId];
-  const where: string[] = ["p.org_id = $1"];
-  if (q) {
-    params.push(`%${q}%`);
-    where.push(`(p.name ilike $${params.length} or coalesce(p.description,'') ilike $${params.length})`);
+    const params: any[] = [orgId];
+    const where: string[] = ["p.org_id = $1"];
+    if (q) {
+      params.push(`%${q}%`);
+      where.push(`(p.name ilike $${params.length} or coalesce(p.description,'') ilike $${params.length})`);
+    }
+    const whereSql = `where ${where.join(" and ")}`;
+
+    const itemsSql = `
+      select p.id, p.name, p.description, p.updated_at
+      from projects p
+      ${whereSql}
+      order by p.updated_at desc
+      limit ${limit} offset ${offset}
+    `;
+    const countSql = `select count(*)::int as total from projects p ${whereSql}`;
+
+    const [itemsRes, countRes] = await Promise.all([
+      query(itemsSql, params),
+      query<{ total: number }>(countSql, params),
+    ]);
+
+    return okJSON({
+      items: itemsRes.rows,
+      page,
+      pageSize: limit,
+      total: countRes.rows[0]?.total ?? 0,
+    });
+  } catch (error) {
+    console.error("Projects API error:", error);
+    return apiError(500, "Failed to fetch projects", {
+      error: error instanceof Error ? error.message : String(error)
+    });
   }
-  const whereSql = `where ${where.join(" and ")}`;
-
-  const itemsSql = `
-    select p.id, p.name, p.description, p.updated_at
-    from projects p
-    ${whereSql}
-    order by p.updated_at desc
-    limit ${limit} offset ${offset}
-  `;
-  const countSql = `select count(*)::int as total from projects p ${whereSql}`;
-
-  const [itemsRes, countRes] = await Promise.all([
-    query(itemsSql, params),
-    query<{ total: number }>(countSql, params),
-  ]);
-
-  return okJSON({
-    items: itemsRes.rows,
-    page,
-    pageSize: limit,
-    total: countRes.rows[0]?.total ?? 0,
-  });
 }
 
 export async function POST(req: Request) {

@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/catalyst/card";
 import { Button } from "@/components/catalyst/button";
 import { InlineIssueChip } from "./InlineIssueChip";
+import { IssuesPanel } from "./IssuesPanel";
 import { prefillChat } from "@/lib/chatBridge";
 
 // Create a form-specific schema with required fields
@@ -45,6 +46,7 @@ export function DecisionForm({
   decision: any; // row from /api/decisions/[id]
 }) {
   const [validation, setValidation] = useState<DecisionValidationResponse | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const baseRef = useRef<any>(decision);
 
@@ -178,6 +180,15 @@ export function DecisionForm({
             >
               Explain this decision
             </Button>
+            {validation && (validation.issues?.length > 0 || validation.proposed_patch) && (
+              <Button
+                type="button"
+                outline
+                onClick={() => setPanelOpen(true)}
+              >
+                View Issues ({validation.issues?.length || 0})
+              </Button>
+            )}
             <Button 
               type="button" 
               onClick={async () => {
@@ -210,6 +221,39 @@ export function DecisionForm({
         </CardContent>
       </Card>
 
+      <IssuesPanel
+        open={panelOpen}
+        onOpenChange={setPanelOpen}
+        issues={validation?.issues ?? []}
+        proposedPatch={validation?.proposed_patch ?? null}
+        rationale={validation?.rationale ?? null}
+        disabledApply={false}
+        onApply={async (patch) => {
+          try {
+            const response = await fetch(`/api/decisions/${decision.id}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...patch,
+                if_match_updated_at: decision.updated_at
+              })
+            });
+            
+            if (response.ok) {
+              alert("Decision updated successfully!");
+              window.location.reload();
+            } else {
+              const error = await response.json();
+              alert(`Failed to update: ${error.message || "Unknown error"}`);
+            }
+          } catch (error) {
+            alert(`Error updating decision: ${error instanceof Error ? error.message : "Unknown error"}`);
+          }
+        }}
+        projectId={projectId}
+        entityType="decision"
+        entityId={decision.id}
+      />
     </>
   );
 }

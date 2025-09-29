@@ -6,7 +6,7 @@ import { openaiProvider } from "./providers/openai";
 // import { anthropicProvider } from "./providers/anthropic";
 // import { azureProvider } from "./providers/azure";
 
-export type SchemaName = "gateway" | "iterate" | "qa" | "summary";
+export type SchemaName = "gateway" | "iterate" | "issues_iterate" | "qa" | "summary";
 
 export type CompleteArgs = {
   system: string;
