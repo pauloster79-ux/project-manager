@@ -11,8 +11,6 @@ import { DatabaseInit } from "../DatabaseInit";
 export function AppSidebar({ projectId }: { projectId: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [projectsExpanded, setProjectsExpanded] = useState(true);
-  const [currentProjectExpanded, setCurrentProjectExpanded] = useState(true);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
 
   // Check if we're on the projects list page
@@ -70,7 +68,7 @@ export function AppSidebar({ projectId }: { projectId: string }) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
-            Projects
+            All Projects
           </div>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -91,43 +89,19 @@ export function AppSidebar({ projectId }: { projectId: string }) {
         <>
           <div className="h-px w-full bg-zinc-300" />
 
-          {/* Current Project Section */}
-          <div className="w-full">
-            <button
-              onClick={() => setCurrentProjectExpanded(!currentProjectExpanded)}
-              className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Current Project
-              </div>
-              <svg 
-                className={`w-4 h-4 transition-transform ${currentProjectExpanded ? 'rotate-90' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            
-            {currentProjectExpanded && (
-              <nav aria-label="Project" className="flex flex-col gap-1 w-full mt-2">
-                {projectItems.map((i) => (
-                  <NavLink key={i.href} href={i.href} active={pathname === i.href}>
-                    {i.label}
-                  </NavLink>
-                ))}
-                {orgItems.map((i) => (
-                  <NavLink key={i.href} href={i.href} active={pathname === i.href}>
-                    {i.label}
-                  </NavLink>
-                ))}
-              </nav>
-            )}
-          </div>
+          {/* Project Navigation */}
+          <nav aria-label="Project" className="flex flex-col gap-1 w-full">
+            {projectItems.map((i) => (
+              <NavLink key={i.href} href={i.href} active={pathname === i.href}>
+                {i.label}
+              </NavLink>
+            ))}
+            {orgItems.map((i) => (
+              <NavLink key={i.href} href={i.href} active={pathname === i.href}>
+                {i.label}
+              </NavLink>
+            ))}
+          </nav>
 
           {/* Settings Section */}
           <div className="w-full">
