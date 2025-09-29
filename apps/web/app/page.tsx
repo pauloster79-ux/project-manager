@@ -1,54 +1,13 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { query } from "@/src/lib/db";
-
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
-  const cookieStore = cookies();
-  const userId = cookieStore.get("user_id")?.value;
-  
-  // If user is not logged in, auto-authenticate as super user
-  if (!userId) {
-    try {
-      // Find the real super user in the database
-      const { rows } = await query(
-        `SELECT id, email, display_name FROM users WHERE email = $1 LIMIT 1`,
-        ["admin@example.com"]
-      );
-
-      if (rows[0]) {
-        const user = rows[0];
-        // Set session cookie with real super user ID
-        cookieStore.set("user_id", user.id, { 
-          httpOnly: true, 
-          sameSite: "lax", 
-          path: "/",
-          maxAge: 60 * 60 * 24 * 30 // 30 days
-        });
-        console.log(`Auto-authenticated as super user: ${user.email} (${user.id})`);
-      } else {
-        console.error("Super user not found in database");
-        // Set a fallback user ID if database is not initialized
-        cookieStore.set("user_id", "fallback-user", { 
-          httpOnly: true, 
-          sameSite: "lax", 
-          path: "/",
-          maxAge: 60 * 60 * 24 * 30 // 30 days
-        });
-      }
-    } catch (error) {
-      console.error("Auto-authentication failed:", error);
-      // Set a fallback user ID if database connection fails
-      cookieStore.set("user_id", "fallback-user", { 
-        httpOnly: true, 
-        sameSite: "lax", 
-        path: "/",
-        maxAge: 60 * 60 * 24 * 30 // 30 days
-      });
-    }
-  }
-  
-  // Always redirect to projects (user is now auto-authenticated as super user)
-  redirect("/projects");
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">AI PM Hub</h1>
+        <p className="text-lg text-gray-600 mb-8">Loading...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+      </div>
+    </div>
+  );
 }
