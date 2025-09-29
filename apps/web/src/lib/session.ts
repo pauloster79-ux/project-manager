@@ -5,9 +5,24 @@ import { query } from "@/src/lib/db";
 export type SessionUser = { id: string; email?: string | null; display_name?: string | null };
 
 export async function getCurrentUser(): Promise<SessionUser> {
-  // DEV STUB: return the first user. Replace with your auth.
-  const { rows } = await query(`select id, email, display_name from users order by created_at asc limit 1`);
-  if (!rows[0]) throw new Error("No users found. Seed at least one user.");
+  // Get user from session cookie
+  const c = cookies();
+  const userId = c.get("user_id")?.value;
+  
+  if (!userId) {
+    throw new Error("No user session found. Please log in.");
+  }
+  
+  // Look up the user in the database
+  const { rows } = await query(
+    `select id, email, display_name from users where id = $1`,
+    [userId]
+  );
+  
+  if (!rows[0]) {
+    throw new Error("User not found in database. Please log in again.");
+  }
+  
   return rows[0];
 }
 

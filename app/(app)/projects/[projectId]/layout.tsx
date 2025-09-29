@@ -26,7 +26,10 @@ export default function ProjectLayout({
         <MobileTopBar projectId={projectId} />
       </div>
       <div className="mx-auto flex w-full">
-        {/* Sidebar (hidden on mobile; shown on lg+) */}
+        {/* Content */}
+        <main className="flex-1 bg-white p-8">{children}</main>
+
+        {/* Sidebar (hidden on mobile; shown on lg+) - positioned on the RIGHT */}
         <aside className={`hidden lg:flex shrink-0 bg-zinc-100 transition-all duration-300 ease-in-out ${
           sidebarCollapsed ? 'w-16' : 'w-80'
         }`}>
@@ -38,9 +41,6 @@ export default function ProjectLayout({
             />
           </div>
         </aside>
-
-        {/* Content */}
-        <main className="flex-1 bg-white p-8">{children}</main>
       </div>
     </div>
   );

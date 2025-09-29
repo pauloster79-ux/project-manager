@@ -4,6 +4,8 @@ import { okJSON, apiError } from "@/src/lib/errors";
 import { DecisionSchema } from "@/src/schemas";
 import { writeAudit } from "@/src/domain/audit";
 import { enqueue } from "@/src/lib/queue";
+import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
+import { requireAccess } from "@/src/lib/authz";
 
 export async function GET(req: Request) {
   try {
@@ -64,11 +66,19 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const user = await getCurrentUser();
+  const orgId = await getCurrentOrgId();
+
   const body = await req.json().catch(() => null);
   if (!body) return apiError(400, "Invalid JSON");
 
   const { project_id, title } =
     DecisionSchema.pick({ project_id: true, title: true }).parse(body);
+
+  // Check project belongs to current org and user can edit it
+  const proj = await query(`select id, org_id from projects where id = $1`, [project_id]);
+  if (!proj.rows[0] || proj.rows[0].org_id !== orgId) return apiError(403, "Project not in current org");
+  await requireAccess({ userId: user.id, orgId, need: "project:edit", projectId: project_id });
 
   const fields = [
     "project_id", "title", "detail", "status", "decided_by", "decided_on",
@@ -86,6 +96,7 @@ export async function POST(req: Request) {
 
   await writeAudit({
     project_id,
+    actor_user_id: user.id,
     actor_source: "ui",
     entity_type: "decision",
     entity_id: row.id,

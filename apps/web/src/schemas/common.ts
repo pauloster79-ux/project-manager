@@ -23,7 +23,7 @@ export const CreateProjectSchema = z.object({
 
 export const PatchRiskSchema = z.object({
   project_id: UUID,
-  patch: z.record(z.any()).optional(),
+  patch: z.record(z.string(), z.any()).optional(),
   if_match_updated_at: z.string().optional(),
   llm_snapshot_id: z.string().optional(),
   issues: z.array(z.any()).optional(),
@@ -31,7 +31,7 @@ export const PatchRiskSchema = z.object({
 
 export const PatchDecisionSchema = z.object({
   project_id: UUID,
-  patch: z.record(z.any()).optional(),
+  patch: z.record(z.string(), z.any()).optional(),
   if_match_updated_at: z.string().optional(),
   llm_snapshot_id: z.string().optional(),
   issues: z.array(z.any()).optional(),
