@@ -1,8 +1,5 @@
-"use client";
-
-import { AppSidebar } from "@/components/app/AppSidebar";
 import { MobileTopBar } from "@/components/app/MobileTopBar";
-import { useState } from "react";
+import { SidebarToggle } from "@/components/app/SidebarToggle";
 
 export default function ProjectLayout({
   children,
@@ -12,13 +9,6 @@ export default function ProjectLayout({
   params: { projectId: string };
 }) {
   const { projectId } = params;
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  const handleToggle = () => {
-    console.log('Toggling sidebar, current state:', sidebarCollapsed);
-    setSidebarCollapsed(!sidebarCollapsed);
-    alert(`Sidebar toggled! New state: ${!sidebarCollapsed ? 'collapsed' : 'expanded'}`);
-  };
 
   return (
     <div className="min-h-screen bg-zinc-100">
@@ -31,17 +21,7 @@ export default function ProjectLayout({
         <main className="flex-1 bg-white p-8">{children}</main>
 
         {/* Sidebar (hidden on mobile; shown on lg+) - positioned on the RIGHT */}
-        <aside className={`hidden lg:flex shrink-0 transition-all duration-300 ease-in-out ${
-          sidebarCollapsed ? 'w-16 bg-red-200' : 'w-80 bg-zinc-100'
-        }`}>
-          <div className="flex h-screen flex-col p-4 w-full">
-            <AppSidebar 
-              projectId={projectId} 
-              collapsed={sidebarCollapsed}
-              onToggle={handleToggle}
-            />
-          </div>
-        </aside>
+        <SidebarToggle projectId={projectId} />
       </div>
     </div>
   );

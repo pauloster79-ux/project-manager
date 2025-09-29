@@ -1,52 +1,43 @@
 import { okJSON, apiError } from "@/src/lib/errors";
-import { query } from "@/src/lib/db";
 import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
+import { query } from "@/src/lib/db";
 
 export async function GET() {
   try {
-    // Test database connection
-    await query("SELECT 1");
-    
-    // Test session
     const user = await getCurrentUser();
     const orgId = await getCurrentOrgId();
     
-    // Check what data exists
-    const projects = await query("SELECT COUNT(*) as count FROM projects");
-    const risks = await query("SELECT COUNT(*) as count FROM risks");
-    const decisions = await query("SELECT COUNT(*) as count FROM decisions");
-    const users = await query("SELECT COUNT(*) as count FROM users");
-    const orgs = await query("SELECT COUNT(*) as count FROM organizations");
+    // Get user's org memberships
+    const orgMemberships = await query(
+      `SELECT ou.org_id, ou.role, o.name as org_name 
+       FROM org_users ou 
+       JOIN organizations o ON ou.org_id = o.id 
+       WHERE ou.user_id = $1`,
+      [user.id]
+    );
     
-    // Get sample data
-    const sampleProjects = await query("SELECT id, name, org_id FROM projects LIMIT 5");
-    const sampleRisks = await query("SELECT id, title, project_id FROM risks LIMIT 5");
-    const sampleDecisions = await query("SELECT id, title, project_id FROM decisions LIMIT 5");
+    // Get user's project memberships
+    const projectMemberships = await query(
+      `SELECT m.project_id, m.role, p.name as project_name, p.org_id
+       FROM memberships m 
+       JOIN projects p ON m.project_id = p.id 
+       WHERE m.user_id = $1`,
+      [user.id]
+    );
     
     return okJSON({
-      database: "connected",
-      session: {
-        user: { id: user.id, email: user.email, display_name: user.display_name },
-        orgId
+      user: {
+        id: user.id,
+        email: user.email,
+        display_name: user.display_name
       },
-      counts: {
-        projects: parseInt(projects.rows[0].count),
-        risks: parseInt(risks.rows[0].count),
-        decisions: parseInt(decisions.rows[0].count),
-        users: parseInt(users.rows[0].count),
-        organizations: parseInt(orgs.rows[0].count)
-      },
-      sampleData: {
-        projects: sampleProjects.rows,
-        risks: sampleRisks.rows,
-        decisions: sampleDecisions.rows
-      }
+      currentOrgId: orgId,
+      orgMemberships: orgMemberships.rows,
+      projectMemberships: projectMemberships.rows
     });
-    
   } catch (error) {
-    return apiError(500, "Debug check failed", {
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined
+    return apiError(500, "Debug failed", {
+      error: error instanceof Error ? error.message : String(error)
     });
   }
 }
