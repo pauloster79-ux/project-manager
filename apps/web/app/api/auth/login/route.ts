@@ -3,6 +3,8 @@ import { okJSON, apiError } from "@/src/lib/errors";
 import { query } from "@/src/lib/db";
 import { cookies } from "next/headers";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   if (!body) return apiError(400, "Invalid JSON");

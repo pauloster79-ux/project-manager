@@ -1,6 +1,8 @@
 import { okJSON, apiError } from "@/src/lib/errors";
 import { query } from "@/src/lib/db";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Check if database is accessible

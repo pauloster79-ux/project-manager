@@ -5,6 +5,8 @@ import { getCurrentUser, getCurrentOrgId } from "@/src/lib/session";
 import { requireAccess } from "@/src/lib/authz";
 import { CreateProjectSchema } from "@/src/schemas/common";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();

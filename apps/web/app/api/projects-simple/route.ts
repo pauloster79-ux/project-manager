@@ -1,6 +1,8 @@
 import { query } from "@/src/lib/db";
 import { okJSON, apiError } from "@/src/lib/errors";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     console.log("Simple projects API called");
