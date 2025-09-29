@@ -5,11 +5,6 @@ export default function HomePage() {
   const cookieStore = cookies();
   const userId = cookieStore.get("user_id")?.value;
   
-  if (!userId) {
-    // Not logged in, redirect to login
-    redirect("/login");
-  }
-  
-  // Logged in, redirect to projects
-  redirect("/projects");
+  // For now, always redirect to login to test deployment
+  redirect("/login");
 }
