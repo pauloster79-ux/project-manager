@@ -14,7 +14,7 @@ export function AppSidebar({ projectId }: { projectId: string }) {
   const [settingsExpanded, setSettingsExpanded] = useState(false);
 
   // Check if we're on the projects list page
-  const isProjectsListPage = pathname === '/projects' || projectId === 'default';
+  const isProjectsListPage = pathname === '/projects';
 
   const projectItems = [
     { href: `/projects/${projectId}`, label: "Overview" },
@@ -31,7 +31,10 @@ export function AppSidebar({ projectId }: { projectId: string }) {
     { href: `/projects/${projectId}/settings`, label: "Settings" },
   ];
 
-  const handleProjectsClick = () => {
+  const handleProjectsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Navigating to /projects');
     router.push('/projects');
   };
 
