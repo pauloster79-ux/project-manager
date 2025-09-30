@@ -1,11 +1,12 @@
-import { okJSON, apiError } from "@/src/lib/errors";
-import { query } from "@/src/lib/db";
-
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
     console.log("Testing database connection...");
+    
+    // Import database module dynamically to avoid build issues
+    const { query } = await import("@/src/lib/db");
+    const { okJSON, apiError } = await import("@/src/lib/errors");
     
     // Test basic database connection
     const result = await query("SELECT 1 as test");
@@ -19,9 +20,19 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Database connection failed:", error);
-    return apiError(500, "Database connection failed", { 
-      error: error instanceof Error ? error.message : String(error),
-      type: "database_connection_error"
+    
+    // Fallback response if imports fail
+    return new Response(JSON.stringify({
+      error: {
+        message: "Database connection failed",
+        details: error instanceof Error ? error.message : String(error),
+        type: "database_connection_error"
+      }
+    }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   }
 }
