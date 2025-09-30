@@ -11,22 +11,22 @@ export default function ProjectsPage() {
   const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch("/api/projects");
-        if (response.ok) {
-          const data = await response.json();
-          setProjects(data.items || []);
-        } else {
-          setError("Failed to load projects");
-        }
-      } catch (err) {
-        console.error("Error fetching projects:", err);
-        setError("Failed to load projects");
-      } finally {
-        setLoading(false);
-      }
-    };
+        const fetchProjects = async () => {
+          try {
+            const response = await fetch("/api/projects-working");
+            if (response.ok) {
+              const data = await response.json();
+              setProjects(data.items || []);
+            } else {
+              setError("Failed to load projects");
+            }
+          } catch (err) {
+            console.error("Error fetching projects:", err);
+            setError("Failed to load projects");
+          } finally {
+            setLoading(false);
+          }
+        };
 
     fetchProjects();
   }, []);
