@@ -1,9 +1,10 @@
 // src/lib/db-pg.ts
 // Using standard pg package instead of Vercel's client
-import { Pool } from 'pg';
+import pkg from 'pg';
+const { Pool } = pkg;
 
 // Create a connection pool
-let pool: Pool | null = null;
+let pool: any = null;
 
 function getPool() {
   if (!pool) {
