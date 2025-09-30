@@ -2,7 +2,15 @@ import { okJSON, apiError } from "@/src/lib/errors";
 
 export const dynamic = 'force-dynamic';
 
+export async function GET() {
+  return await performMigration();
+}
+
 export async function POST() {
+  return await performMigration();
+}
+
+async function performMigration() {
   try {
     console.log("Starting working database migration...");
     
