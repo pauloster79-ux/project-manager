@@ -1,13 +1,22 @@
 import { okJSON, apiError } from "@/src/lib/errors";
 import { query } from "@/src/lib/db";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     console.log("Starting database migration...");
     
     // Test database connection first
-    await query("SELECT 1");
-    console.log("Database connection successful");
+    try {
+      await query("SELECT 1");
+      console.log("Database connection successful");
+    } catch (dbError) {
+      console.error("Database connection failed:", dbError);
+      return apiError(500, "Database connection failed", {
+        error: dbError instanceof Error ? dbError.message : String(dbError)
+      });
+    }
     
     // Create tables one by one to avoid complex transaction issues
     const tables = [
@@ -150,7 +159,8 @@ export async function POST() {
     console.error("Migration failed:", error);
     return apiError(500, "Database migration failed", { 
       error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined
+      stack: error instanceof Error ? error.stack : undefined,
+      type: "migration_error"
     });
   }
 }
