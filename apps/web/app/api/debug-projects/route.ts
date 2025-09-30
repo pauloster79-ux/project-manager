@@ -44,7 +44,6 @@ export async function GET() {
           p.created_at,
           p.updated_at,
           o.name as org_name,
-          LENGTH(p.id) as id_length,
           p.id::text as id_text
         FROM projects p
         LEFT JOIN organizations o ON p.org_id = o.id
@@ -62,7 +61,7 @@ export async function GET() {
         total: projectsResult.rows.length,
         debug: {
           sampleProject: projectsResult.rows[0] || null,
-          allIds: projectsResult.rows.map(p => ({ id: p.id, idLength: p.id_length, name: p.name }))
+          allIds: projectsResult.rows.map(p => ({ id: p.id, name: p.name }))
         },
         status: "success"
       });
