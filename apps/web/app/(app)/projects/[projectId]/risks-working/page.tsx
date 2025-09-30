@@ -1,5 +1,11 @@
-import { AddRiskButton } from "./AddRiskButton";
 import { RiskTable } from "../risks/RiskTable";
+import dynamicImport from "next/dynamic";
+
+// Dynamically import the client component to avoid hydration issues
+const AddRiskButton = dynamicImport(() => import("./AddRiskButton").then(mod => ({ default: mod.AddRiskButton })), {
+  ssr: false,
+  loading: () => <button className="px-4 py-2 bg-gray-400 text-white rounded" disabled>Loading...</button>
+});
 
 export const dynamic = 'force-dynamic';
 
@@ -79,7 +85,15 @@ export default async function RisksPage({ params }: RisksPageProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Risks</h1>
-        <AddRiskButton projectId={projectId} />
+        <div className="flex gap-2">
+          <button 
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            onClick={() => alert('Test button works!')}
+          >
+            Test Button
+          </button>
+          <AddRiskButton projectId={projectId} />
+        </div>
       </div>
       
       <div className="text-sm text-muted-foreground mb-4">
