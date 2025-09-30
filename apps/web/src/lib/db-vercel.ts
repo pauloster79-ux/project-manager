@@ -21,7 +21,16 @@ function getClient() {
       if (!process.env.POSTGRES_URL && !process.env.DATABASE_URL) {
         throw new Error('No database URL found. Please set POSTGRES_URL or DATABASE_URL environment variable.');
       }
-      client = createClient();
+      
+      // Create client with explicit connection string
+      const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+      console.log('Creating Vercel client with connection string:', connectionString?.substring(0, 50) + '...');
+      
+      client = createClient({
+        connectionString: connectionString
+      });
+      
+      console.log('Vercel client created successfully');
     } catch (error) {
       console.error('Failed to create database client:', error);
       throw error;
