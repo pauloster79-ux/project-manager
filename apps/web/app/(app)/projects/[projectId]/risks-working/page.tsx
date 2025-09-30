@@ -1,13 +1,64 @@
 import { RiskTable } from "../risks/RiskTable";
-import dynamicImport from "next/dynamic";
-
-// Dynamically import the client component to avoid hydration issues
-const AddRiskButton = dynamicImport(() => import("./AddRiskButton").then(mod => ({ default: mod.AddRiskButton })), {
-  ssr: false,
-  loading: () => <button className="px-4 py-2 bg-gray-400 text-white rounded" disabled>Loading...</button>
-});
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = 'force-dynamic';
+
+async function createRiskAction(formData: FormData) {
+  "use server";
+  
+  const projectId = formData.get("projectId") as string;
+  
+  try {
+    // Use the working PG approach directly
+    const { Pool } = await import('pg');
+    
+    // Get database URL from environment
+    const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+    
+    if (!databaseUrl) {
+      throw new Error('No database URL found');
+    }
+    
+    // Parse the database URL
+    const url = new URL(databaseUrl);
+    
+    // Create a connection pool
+    const pool = new Pool({
+      host: url.hostname,
+      port: parseInt(url.port) || 5432,
+      database: url.pathname.slice(1), // Remove leading slash
+      user: url.username,
+      password: url.password,
+      ssl: url.hostname !== 'localhost' ? { rejectUnauthorized: false } : false,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    });
+    
+    // Create a new risk
+    const { rows } = await pool.query(
+      `insert into risks (project_id, title, probability, impact, summary) 
+       values ($1, $2, $3, $4, $5) 
+       returning *`,
+      [projectId, "New Risk", 3, 3, "Risk description to be filled in"]
+    );
+
+    const newRisk = rows[0];
+    
+    // Close the pool
+    await pool.end();
+    
+    // Revalidate the risks page
+    revalidatePath(`/projects/${projectId}/risks-working`);
+    
+    // Redirect to the new risk's edit page
+    redirect(`/projects/${projectId}/risks/${newRisk.id}`);
+  } catch (error) {
+    console.error("Error creating risk:", error);
+    throw new Error("Failed to create risk");
+  }
+}
 
 interface RisksPageProps {
   params: { projectId: string };
@@ -85,15 +136,15 @@ export default async function RisksPage({ params }: RisksPageProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Risks</h1>
-        <div className="flex gap-2">
+        <form action={createRiskAction}>
+          <input type="hidden" name="projectId" value={projectId} />
           <button 
+            type="submit"
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            onClick={() => alert('Test button works!')}
           >
-            Test Button
+            Add New Risk
           </button>
-          <AddRiskButton projectId={projectId} />
-        </div>
+        </form>
       </div>
       
       <div className="text-sm text-muted-foreground mb-4">
