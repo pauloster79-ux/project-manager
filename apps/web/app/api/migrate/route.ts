@@ -1,54 +1,106 @@
 import { okJSON, apiError } from "@/src/lib/errors";
 import { query } from "@/src/lib/db";
-import { readFileSync } from "fs";
-import { join } from "path";
 
 export async function POST() {
   try {
     console.log("Starting database migration...");
     
-    // Check if we're in the right directory
-    const cwd = process.cwd();
-    console.log("Current working directory:", cwd);
-    
-    // Read the initial migration file
-    const migrationPath = join(cwd, "migrations", "0001_init.sql");
-    console.log("Looking for migration file at:", migrationPath);
-    
-    let migrationSql: string;
-    try {
-      migrationSql = readFileSync(migrationPath, "utf-8");
-    } catch (fileError) {
-      console.error("Failed to read migration file:", fileError);
-      return apiError(500, `Failed to read migration file: ${fileError instanceof Error ? fileError.message : String(fileError)}`);
-    }
+    // Run the initial migration SQL directly
+    const initialMigrationSql = `
+      -- Extensions
+      create extension if not exists pgcrypto;
+      create extension if not exists vector;
+
+      -- Projects
+      create table if not exists projects (
+        id uuid primary key default gen_random_uuid(),
+        name text not null,
+        description text,
+        created_at timestamptz not null default now(),
+        updated_at timestamptz not null default now()
+      );
+
+      -- Users
+      create table if not exists users (
+        id uuid primary key default gen_random_uuid(),
+        email text unique not null,
+        display_name text,
+        created_at timestamptz not null default now()
+      );
+
+      -- Organizations
+      create table if not exists organizations (
+        id uuid primary key default gen_random_uuid(),
+        name text not null,
+        created_at timestamptz not null default now()
+      );
+
+      -- Risks
+      create table if not exists risks (
+        id uuid primary key default gen_random_uuid(),
+        project_id uuid not null references projects(id) on delete cascade,
+        title text not null,
+        summary text,
+        probability integer check (probability >= 1 and probability <= 5),
+        impact integer check (impact >= 1 and impact <= 5),
+        owner_id uuid references users(id),
+        next_review_date date,
+        created_at timestamptz not null default now(),
+        updated_at timestamptz not null default now()
+      );
+
+      -- Decisions
+      create table if not exists decisions (
+        id uuid primary key default gen_random_uuid(),
+        project_id uuid not null references projects(id) on delete cascade,
+        title text not null,
+        detail text,
+        status text not null default 'Proposed',
+        decided_by uuid references users(id),
+        decided_on date,
+        created_at timestamptz not null default now(),
+        updated_at timestamptz not null default now()
+      );
+
+      -- Org Users (many-to-many relationship)
+      create table if not exists org_users (
+        id uuid primary key default gen_random_uuid(),
+        org_id uuid not null references organizations(id) on delete cascade,
+        user_id uuid not null references users(id) on delete cascade,
+        role text not null default 'member',
+        created_at timestamptz not null default now(),
+        unique(org_id, user_id)
+      );
+
+      -- Memberships (many-to-many relationship between users and projects)
+      create table if not exists memberships (
+        id uuid primary key default gen_random_uuid(),
+        user_id uuid not null references users(id) on delete cascade,
+        project_id uuid not null references projects(id) on delete cascade,
+        role text not null default 'member',
+        created_at timestamptz not null default now(),
+        unique(user_id, project_id)
+      );
+
+      -- Add org_id to projects table
+      alter table projects add column if not exists org_id uuid references organizations(id);
+
+      -- Indexes
+      create index if not exists idx_risks_project_id on risks(project_id);
+      create index if not exists idx_decisions_project_id on decisions(project_id);
+      create index if not exists idx_org_users_org_id on org_users(org_id);
+      create index if not exists idx_org_users_user_id on org_users(user_id);
+      create index if not exists idx_memberships_user_id on memberships(user_id);
+      create index if not exists idx_memberships_project_id on memberships(project_id);
+      create index if not exists idx_projects_org_id on projects(org_id);
+    `;
     
     console.log("Running initial migration...");
     try {
-      await query(migrationSql);
+      await query(initialMigrationSql);
     } catch (migrationError) {
       console.error("Initial migration failed:", migrationError);
       return apiError(500, `Initial migration failed: ${migrationError instanceof Error ? migrationError.message : String(migrationError)}`);
-    }
-    
-    // Read the orgs migration file
-    const orgMigrationPath = join(cwd, "migrations", "2025_09_28_orgs_roles.sql");
-    console.log("Looking for org migration file at:", orgMigrationPath);
-    
-    let orgMigrationSql: string;
-    try {
-      orgMigrationSql = readFileSync(orgMigrationPath, "utf-8");
-    } catch (fileError) {
-      console.error("Failed to read org migration file:", fileError);
-      return apiError(500, `Failed to read org migration file: ${fileError instanceof Error ? fileError.message : String(fileError)}`);
-    }
-    
-    console.log("Running orgs migration...");
-    try {
-      await query(orgMigrationSql);
-    } catch (migrationError) {
-      console.error("Org migration failed:", migrationError);
-      return apiError(500, `Org migration failed: ${migrationError instanceof Error ? migrationError.message : String(migrationError)}`);
     }
     
     // Verify tables were created
