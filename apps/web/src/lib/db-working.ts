@@ -1,9 +1,9 @@
-// src/lib/db-pg.ts
-// Using standard pg package instead of Vercel's client
+// src/lib/db-working.ts
+// Working database implementation based on test-db-pg approach
 import { Pool } from 'pg';
 
 // Create a connection pool
-let pool: any = null;
+let pool: Pool | null = null;
 
 function getPool() {
   if (!pool) {
