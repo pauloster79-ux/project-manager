@@ -6,7 +6,6 @@ import { useState } from "react";
 import { ProjectSelector } from "./ProjectSelector";
 import { NavLink } from "./NavLink";
 import { OrgSwitcher } from "../OrgSwitcher";
-import { DatabaseInit } from "../DatabaseInit";
 
 export function AppSidebar({ projectId }: { projectId: string }) {
   const pathname = usePathname();
@@ -53,10 +52,6 @@ export function AppSidebar({ projectId }: { projectId: string }) {
 
       <div className="w-full">
         <OrgSwitcher />
-      </div>
-
-      <div className="w-full">
-        <DatabaseInit />
       </div>
 
       <div className="h-px w-full bg-zinc-300" />
