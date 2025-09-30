@@ -1,6 +1,14 @@
 export const dynamic = 'force-dynamic';
 
+export async function GET() {
+  return await performMigrationTest();
+}
+
 export async function POST() {
+  return await performMigrationTest();
+}
+
+async function performMigrationTest() {
   try {
     console.log("Testing simple migration...");
     
