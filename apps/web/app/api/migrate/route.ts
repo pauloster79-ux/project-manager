@@ -9,12 +9,13 @@ export async function POST() {
     
     // Test database connection first
     try {
-      await query("SELECT 1");
-      console.log("Database connection successful");
+      const testResult = await query("SELECT 1 as test");
+      console.log("Database connection successful:", testResult);
     } catch (dbError) {
       console.error("Database connection failed:", dbError);
       return apiError(500, "Database connection failed", {
-        error: dbError instanceof Error ? dbError.message : String(dbError)
+        error: dbError instanceof Error ? dbError.message : String(dbError),
+        type: "database_connection_error"
       });
     }
     
