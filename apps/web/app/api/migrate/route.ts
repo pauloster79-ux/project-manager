@@ -7,6 +7,30 @@ export async function POST() {
   try {
     console.log("Starting database migration...");
     
+    // Set a timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Migration timeout after 30 seconds')), 30000);
+    });
+    
+    const migrationPromise = performMigration();
+    
+    // Race between migration and timeout
+    const result = await Promise.race([migrationPromise, timeoutPromise]);
+    return result as Response;
+    
+  } catch (error) {
+    console.error("Migration failed:", error);
+    return apiError(500, "Database migration failed", { 
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      type: "migration_error"
+    });
+  }
+}
+
+async function performMigration() {
+  try {
+    
     // Test database connection first
     try {
       const testResult = await query("SELECT 1 as test");
@@ -24,11 +48,11 @@ export async function POST() {
       {
         name: "users",
         sql: `
-          create table if not exists users (
-            id uuid primary key default gen_random_uuid(),
-            email text unique not null,
-            display_name text,
-            created_at timestamptz not null default now()
+          CREATE TABLE IF NOT EXISTS users (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            email TEXT UNIQUE NOT NULL,
+            display_name TEXT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
           )
         `
       },
@@ -150,7 +174,7 @@ export async function POST() {
       });
     }
     
-    return okJSON({ 
+    return okJSON({
       message: "Database migrations completed successfully",
       tablesCreated: verifiedTables,
       status: "ready"
@@ -158,10 +182,6 @@ export async function POST() {
     
   } catch (error) {
     console.error("Migration failed:", error);
-    return apiError(500, "Database migration failed", { 
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      type: "migration_error"
-    });
+    throw error; // Re-throw to be caught by the outer try-catch
   }
 }
