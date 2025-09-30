@@ -1,4 +1,4 @@
-import { AddRiskButton } from "../risks/AddRiskButton";
+import { AddRiskButton } from "./AddRiskButton";
 import { RiskTable } from "../risks/RiskTable";
 
 export const dynamic = 'force-dynamic';

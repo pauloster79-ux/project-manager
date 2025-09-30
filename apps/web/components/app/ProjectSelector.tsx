@@ -15,7 +15,7 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/projects");
+        const res = await fetch("/api/projects-working");
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         }
@@ -45,13 +45,13 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
       if (response.ok) {
         const newProject = await response.json();
         // Refresh the projects list
-        const res = await fetch("/api/projects");
+        const res = await fetch("/api/projects-working");
         if (res.ok) {
           const data = await res.json();
           setProjects(data.items || []);
         }
         // Navigate to the new project
-        router.push(`/projects/${newProject.id}/risks`);
+        router.push(`/projects/${newProject.id}/risks-working`);
       } else {
         alert("Failed to create project");
       }
@@ -73,7 +73,7 @@ export function ProjectSelector({ currentProjectId }: { currentProjectId: string
         if (id === "new-project") {
           createNewProject();
         } else {
-          router.push(`/projects/${id}/risks`);
+          router.push(`/projects/${id}/risks-working`);
         }
       }}
       placeholder={loading ? "Loading…" : "Select project"}
