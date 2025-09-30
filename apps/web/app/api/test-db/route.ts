@@ -5,64 +5,53 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    // Check if database is accessible
-    await query("SELECT 1");
+    console.log('Testing database connection in deployed app...');
     
-    // Check what tables exist
+    // Test basic connection
+    const result = await query("SELECT 1 as test");
+    console.log('✅ Database connection successful:', result.rows[0]);
+    
+    // Test if we have the required tables
     const tablesResult = await query(`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
+      AND table_name IN ('users', 'organizations', 'projects', 'risks', 'decisions')
       ORDER BY table_name
     `);
     
-    const tables = tablesResult.rows.map(row => row.table_name);
+    // Test if we have any data
+    const usersResult = await query('SELECT COUNT(*) as count FROM users');
+    const orgsResult = await query('SELECT COUNT(*) as count FROM organizations');
+    const projectsResult = await query('SELECT COUNT(*) as count FROM projects');
     
-    // Check if we have the required tables
-    const requiredTables = ['users', 'organizations', 'projects', 'risks', 'decisions', 'org_users', 'memberships'];
-    const hasRequiredTables = requiredTables.every(table => tables.includes(table));
-    
-    // Count existing data
-    let counts = { users: 0, organizations: 0, projects: 0, risks: 0, decisions: 0 };
-    
-    if (hasRequiredTables) {
-      try {
-        const usersCount = await query("SELECT COUNT(*) as count FROM users");
-        const orgsCount = await query("SELECT COUNT(*) as count FROM organizations");
-        const projectsCount = await query("SELECT COUNT(*) as count FROM projects");
-        const risksCount = await query("SELECT COUNT(*) as count FROM risks");
-        const decisionsCount = await query("SELECT COUNT(*) as count FROM decisions");
-        
-        counts = {
-          users: parseInt(usersCount.rows[0].count),
-          organizations: parseInt(orgsCount.rows[0].count),
-          projects: parseInt(projectsCount.rows[0].count),
-          risks: parseInt(risksCount.rows[0].count),
-          decisions: parseInt(decisionsCount.rows[0].count)
-        };
-      } catch (error) {
-        // Tables exist but might have issues
-        console.warn("Error counting data:", error);
+    const status = {
+      database: "connected",
+      tables: tablesResult.rows.map(r => r.table_name),
+      data_counts: {
+        users: parseInt(usersResult.rows[0].count),
+        organizations: parseInt(orgsResult.rows[0].count),
+        projects: parseInt(projectsResult.rows[0].count),
+      },
+      environment_vars: {
+        DATABASE_URL: process.env.DATABASE_URL ? "✅ Set" : "❌ Missing",
+        POSTGRES_URL: process.env.POSTGRES_URL ? "✅ Set" : "❌ Missing",
+        POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING ? "✅ Set" : "❌ Missing",
+        LLM_PROVIDER: process.env.LLM_PROVIDER || "❌ Missing",
       }
-    }
+    };
     
-    const ready = hasRequiredTables && counts.users > 0 && counts.organizations > 0;
-    
-    return okJSON({
-      ready,
-      tables,
-      hasRequiredTables,
-      counts,
-      message: ready 
-        ? "Database is ready" 
-        : hasRequiredTables 
-          ? "Database tables exist but no data found"
-          : "Database tables missing - run migrations first"
-    });
-    
+    return okJSON(status);
   } catch (error) {
-    return apiError(500, "Database connection failed", {
-      error: error instanceof Error ? error.message : String(error)
+    console.error('❌ Database test failed:', error);
+    return apiError(500, "Database connection failed", { 
+      error: error instanceof Error ? error.message : String(error),
+      environment_vars: {
+        DATABASE_URL: process.env.DATABASE_URL ? "✅ Set" : "❌ Missing",
+        POSTGRES_URL: process.env.POSTGRES_URL ? "✅ Set" : "❌ Missing",
+        POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING ? "✅ Set" : "❌ Missing",
+        LLM_PROVIDER: process.env.LLM_PROVIDER || "❌ Missing",
+      }
     });
   }
 }
